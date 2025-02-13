@@ -5,8 +5,15 @@ import { UserModule } from './user/user.module';
 import { CarnetModule } from './carnet/carnet.module';
 import { AsistenciaModule } from './asistencia/asistencia.module';
 import { ActividadModule } from './actividad/actividad.module';
-import { CuestionarioModule } from './cuestionario/cuestionario.module';
-import { EvaluacionModule } from './evaluacion/evaluacion.module';
+import { EncuestaModule } from './encuesta/encuesta.module';
+import { ParqModule } from './parq/parq.module';
+import { CaracterizacionModule } from './caracterizacion/caracterizacion.module';
+import { ConsentimientoModule } from './consentimiento/consentimiento.module';
+import { DatosGeneralesModule } from './datos-generales/datos-generales.module';
+import { PreguntaModule } from './pregunta/pregunta.module';
+import { TipoPreguntaModule } from './tipo-pregunta/tipo-pregunta.module';
+import { OpcionPreguntaModule } from './opcion-pregunta/opcion-pregunta.module';
+import { RespuestaModule } from './respuesta/respuesta.module';
 
 @Module({
   imports: [
@@ -30,8 +37,15 @@ import { EvaluacionModule } from './evaluacion/evaluacion.module';
     CarnetModule,
     AsistenciaModule,
     ActividadModule,
-    CuestionarioModule,
-    EvaluacionModule,
+    EncuestaModule,
+    ParqModule,
+    CaracterizacionModule,
+    ConsentimientoModule,
+    DatosGeneralesModule,
+    PreguntaModule,
+    TipoPreguntaModule,
+    OpcionPreguntaModule,
+    RespuestaModule,
   ],
 })
 export class AppModule {}

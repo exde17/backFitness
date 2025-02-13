@@ -6,8 +6,12 @@ import {
   UpdateDateColumn,
   BeforeInsert,
   BeforeUpdate,
+  OneToMany,
 } from 'typeorm';
 import { IsEmail, IsNotEmpty, MinLength } from 'class-validator';
+import { DatosGenerale } from 'src/datos-generales/entities/datos-generale.entity';
+import { RespuestaParq } from 'src/parq/respuesta-parq/entities/respuesta-parq.entity';
+
 
 @Entity({
   name: 'users',
@@ -16,25 +20,6 @@ import { IsEmail, IsNotEmpty, MinLength } from 'class-validator';
 export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
-
-  @Column('text', {
-    nullable: false,
-    name: 'first_name',
-  })
-  name: string;
-
-  //TODO: crear enum para tipo de documento
-  // @Column('text', {
-  //   nullable: false,
-  //   name: 'last_name',
-  // })
-  // lastName: string;
-
-  @Column('numeric',{
-    nullable: false,
-    name: 'document_number',
-  })
-  documentNumber: number;
 
   @Column('text', {
     nullable: false,
@@ -75,6 +60,12 @@ export class User {
     name: 'updated_at',
   })
   updatedAt: Date;
+
+  @OneToMany(() => DatosGenerale, (datosGenerale) => datosGenerale.user)
+  datosGenerales: DatosGenerale[];
+
+  @OneToMany(()=> RespuestaParq, respuestaParq => respuestaParq.user)
+  respuestaParq: RespuestaParq[];
 
   @BeforeInsert()
   emailToLowerCase() {
