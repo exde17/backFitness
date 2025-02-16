@@ -6,6 +6,11 @@ export class PreguntaParq {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
+    @Column('numeric', {
+        nullable: false,
+    })
+    item: number;
+
     @Column('text', {
         nullable: false,
     })

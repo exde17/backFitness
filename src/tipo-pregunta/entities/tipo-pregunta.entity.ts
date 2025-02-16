@@ -11,7 +11,7 @@ export class TipoPregunta {
         nullable: false,
         name: 'tipo_pregunta',
     })
-    tipoPregunta: string;
+    tipo: string;
 
     @Column('text', {
         nullable: false,

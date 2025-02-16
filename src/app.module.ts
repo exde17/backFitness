@@ -14,7 +14,6 @@ import { PreguntaModule } from './pregunta/pregunta.module';
 import { TipoPreguntaModule } from './tipo-pregunta/tipo-pregunta.module';
 import { OpcionPreguntaModule } from './opcion-pregunta/opcion-pregunta.module';
 import { RespuestaModule } from './respuesta/respuesta.module';
-import { RespuestaCaracterizacionModule } from './respuesta-caracterizacion/respuesta-caracterizacion.module';
 
 @Module({
   imports: [
@@ -47,7 +46,6 @@ import { RespuestaCaracterizacionModule } from './respuesta-caracterizacion/resp
     TipoPreguntaModule,
     OpcionPreguntaModule,
     RespuestaModule,
-    RespuestaCaracterizacionModule,
   ],
 })
 export class AppModule {}

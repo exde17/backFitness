@@ -12,8 +12,8 @@ import { IsEmail, IsNotEmpty, MinLength } from 'class-validator';
 import { DatosGenerale } from 'src/datos-generales/entities/datos-generale.entity';
 import { RespuestaParq } from 'src/parq/respuesta-parq/entities/respuesta-parq.entity';
 import { Caracterizacion } from 'src/caracterizacion/entities/caracterizacion.entity';
-import { RespuestaCaracterizacion } from 'src/respuesta-caracterizacion/entities/respuesta-caracterizacion.entity';
 import { Encuesta } from 'src/encuesta/entities/encuesta.entity';
+import { Respuesta } from 'src/respuesta/entities/respuesta.entity';
 
 
 @Entity({
@@ -73,11 +73,11 @@ export class User {
   @OneToMany(()=> Caracterizacion, caracterizacion => caracterizacion.user)
   caracterizacion: Caracterizacion[];
 
-  @OneToMany(()=> RespuestaCaracterizacion, respuestaCaracterizacion => respuestaCaracterizacion.user)
-  respuestaCaracterizacion: RespuestaCaracterizacion[];
-
   @OneToMany(()=> Encuesta, encuesta => encuesta.userCreador)
   encuesta: Encuesta[];
+
+  @OneToMany(()=> Respuesta, respuesta => respuesta.user)
+  respuesta: Respuesta[];
 
   @BeforeInsert()
   emailToLowerCase() {

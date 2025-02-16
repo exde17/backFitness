@@ -1,5 +1,6 @@
+import { Respuesta } from "src/respuesta/entities/respuesta.entity";
 import { User } from "src/user/entities/user.entity";
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity('encuesta')
 export class Encuesta {
@@ -18,4 +19,7 @@ export class Encuesta {
 
     @ManyToOne(()=> User, user => user.encuesta)
     userCreador: User;
+
+    @OneToMany(()=> Respuesta, respuesta => respuesta.encuesta)
+    respuesta: Respuesta[];
 }

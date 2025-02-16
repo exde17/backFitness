@@ -1,5 +1,6 @@
 import { Encuesta } from "src/encuesta/entities/encuesta.entity";
 import { Parq } from "src/parq/entities/parq.entity";
+import { Respuesta } from "src/respuesta/entities/respuesta.entity";
 import { TipoPregunta } from "src/tipo-pregunta/entities/tipo-pregunta.entity";
 import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
@@ -16,9 +17,6 @@ export class Pregunta {
     @ManyToOne(()=> TipoPregunta, tipoPregunta => tipoPregunta.pregunta)
     tipoPregunta: TipoPregunta;
 
-    @OneToMany(()=> Parq, parq => parq.pregunta)
-    parq: Parq;
-
-    // @ManyToOne(()=> Encuesta, encuesta => encuesta.pregunta)
-    // encuesta: Encuesta;
+    @OneToMany(()=> Respuesta, respuesta => respuesta.pregunta)
+    respuesta: Respuesta[];
 }

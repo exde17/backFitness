@@ -11,6 +11,6 @@ export class Parq {
     })
     item: number;
 
-    @ManyToOne(()=> Pregunta, pregunta => pregunta.parq)
-    pregunta: Pregunta;
+    // @ManyToOne(()=> Pregunta, pregunta => pregunta.parq)
+    // pregunta: Pregunta;
 }
