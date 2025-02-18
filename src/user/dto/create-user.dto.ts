@@ -1,11 +1,16 @@
 import {
+  IsDateString,
   IsEmail,
+  IsEnum,
   IsNotEmpty,
+  IsNumber,
   IsString,
   Matches,
   MaxLength,
   MinLength,
 } from 'class-validator';
+import { GenderType } from '../utils/genderType.enum';
+import { DocumentType } from "../../user/utils/documentType.enum";
 
 export class CreateUserDto {
   // @IsString()
@@ -28,4 +33,82 @@ export class CreateUserDto {
       'The password must have a Uppercase, lowercase letter and a number',
   })
   password: string;
+
+  //////////////////////////////////////////////////////
+
+    @IsString()
+    @IsNotEmpty()
+    readonly name: string;
+  
+    @IsEnum(DocumentType)
+    @IsNotEmpty()
+    readonly documentType: DocumentType;
+  
+    @IsNumber()
+    @IsNotEmpty()
+    readonly documentNumber: number;
+  
+    @IsString()
+    @IsNotEmpty()
+    readonly phoneNumber: string;
+  
+    @IsDateString()
+    @IsNotEmpty()
+    readonly birthDate: Date;
+  
+    @IsString()
+    @IsNotEmpty()
+    readonly address: string;
+  
+    @IsString()
+    @IsNotEmpty()
+    readonly barrio: string;
+  
+    @IsString()
+    @IsNotEmpty()
+    readonly comunaCorregimiento: string;
+  
+    @IsString()
+    @IsNotEmpty()
+    readonly etnia: string;
+  
+    @IsString()
+    @IsNotEmpty()
+    readonly discapacidad: string;
+  
+    @IsEnum(GenderType)
+    @IsNotEmpty()
+    readonly gender: GenderType;
+  
+    @IsString()
+    @IsNotEmpty()
+    readonly poblacionVulnerable: string;
+  
+    @IsString()
+    @IsNotEmpty()
+    readonly nivelEducativo: string;
+  
+    @IsString()
+    @IsNotEmpty()
+    readonly ocupacion: string;
+  
+    @IsString()
+    @IsNotEmpty()
+    readonly regimenSalud: string;
+  
+    @IsString()
+    @IsNotEmpty()
+    readonly eps: string;
+  
+    @IsString()
+    @IsNotEmpty()
+    readonly grupoSanquineo: string;
+  
+    @IsString()
+    @IsNotEmpty()
+    readonly contactoEmergencia: string;
+  
+    @IsString()
+    @IsNotEmpty()
+    readonly telefonoContacto: string;
 }
