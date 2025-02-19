@@ -2,14 +2,20 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { CaracterizacionService } from './caracterizacion.service';
 import { CreateCaracterizacionDto } from './dto/create-caracterizacion.dto';
 import { UpdateCaracterizacionDto } from './dto/update-caracterizacion.dto';
+import { Auth, GetUser } from 'src/user/decorator';
+import { User } from 'src/user/entities/user.entity';
 
 @Controller('caracterizacion')
 export class CaracterizacionController {
   constructor(private readonly caracterizacionService: CaracterizacionService) {}
 
   @Post()
-  create(@Body() createCaracterizacionDto: CreateCaracterizacionDto) {
-    return this.caracterizacionService.create(createCaracterizacionDto);
+  @Auth()
+  async create(
+    @Body() createCaracterizacionDto: CreateCaracterizacionDto,
+    @GetUser() user: User
+  ) {
+    return this.caracterizacionService.create(createCaracterizacionDto, user);
   }
 
   @Get()

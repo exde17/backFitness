@@ -1,7 +1,10 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { PreguntaParqService } from './pregunta-parq.service';
 import { CreatePreguntaParqDto } from './dto/create-pregunta-parq.dto';
 import { UpdatePreguntaParqDto } from './dto/update-pregunta-parq.dto';
+import { AuthGuard } from '@nestjs/passport';
+import { UseRoleGuard } from 'src/user/guards/use-role/use-role.guard';
+import { Auth } from 'src/user/decorator';
 
 @Controller('pregunta-parq')
 export class PreguntaParqController {
@@ -13,7 +16,9 @@ export class PreguntaParqController {
   }
 
   @Get()
-  findAll() {
+  // @UseGuards(AuthGuard(), UseRoleGuard.)
+  @Auth()
+  async findAll() {
     return this.preguntaParqService.findAll();
   }
 

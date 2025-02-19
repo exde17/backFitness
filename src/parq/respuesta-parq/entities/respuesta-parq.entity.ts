@@ -9,12 +9,12 @@ export class RespuestaParq {
 
     @Column('bool',{
         nullable: false,
-        name: 'res´puesta_parq'
+        name: 'respuesta_parq'
     })
     respuestaParq: boolean;
 
     @ManyToOne(()=> PreguntaParq, preguntaParq => preguntaParq.respuestaParq)
-    preguntaParq: PreguntaParq;
+    preguntaParq: PreguntaParq; 
 
     @ManyToOne(()=> User, user => user.respuestaParq)
     user: User;

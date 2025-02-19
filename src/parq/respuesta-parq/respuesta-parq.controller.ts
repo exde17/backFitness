@@ -2,14 +2,20 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { RespuestaParqService } from './respuesta-parq.service';
 import { CreateRespuestaParqDto } from './dto/create-respuesta-parq.dto';
 import { UpdateRespuestaParqDto } from './dto/update-respuesta-parq.dto';
+import { Auth, GetUser } from 'src/user/decorator';
+import { User } from 'src/user/entities/user.entity';
 
 @Controller('respuesta-parq')
 export class RespuestaParqController {
   constructor(private readonly respuestaParqService: RespuestaParqService) {}
 
   @Post()
-  create(@Body() createRespuestaParqDto: CreateRespuestaParqDto) {
-    return this.respuestaParqService.create(createRespuestaParqDto);
+  @Auth()
+  async create(
+    @Body() createRespuestaParqDto: CreateRespuestaParqDto,
+    @GetUser() user: User,
+  ) {
+    return this.respuestaParqService.create(createRespuestaParqDto, user);
   }
 
   @Get()

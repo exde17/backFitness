@@ -17,5 +17,5 @@ export class PreguntaParq {
     enunciado: string;
 
     @OneToMany(()=> RespuestaParq, respuestaParq => respuestaParq.preguntaParq)
-    respuestaParq: RespuestaParq;
+    respuestaParq: RespuestaParq[];
 }

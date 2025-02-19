@@ -1,15 +1,38 @@
 import { Injectable } from '@nestjs/common';
 import { CreatePreguntaParqDto } from './dto/create-pregunta-parq.dto';
 import { UpdatePreguntaParqDto } from './dto/update-pregunta-parq.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { PreguntaParq } from './entities/pregunta-parq.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class PreguntaParqService {
-  create(createPreguntaParqDto: CreatePreguntaParqDto) {
-    return 'This action adds a new preguntaParq';
+  constructor(
+    @InjectRepository(PreguntaParq)
+    private preguntaParqRepository: Repository<PreguntaParq>,
+  ) {}
+  async create(createPreguntaParqDto: CreatePreguntaParqDto) {
+    try {
+      const preguntaParq = this.preguntaParqRepository.create(createPreguntaParqDto);
+      await this.preguntaParqRepository.save(preguntaParq);
+      return 'PreguntaParq creada';
+    } catch (error) {
+      
+    }
   }
 
-  findAll() {
-    return `This action returns all preguntaParq`;
+  async findAll() {
+    try {
+      return await this.preguntaParqRepository.find({
+        order: {
+          item: 'ASC'
+        }
+      });
+    } catch (error) {
+      console.log(error);
+      return error;
+      
+    }
   }
 
   findOne(id: number) {
