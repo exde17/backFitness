@@ -7,4 +7,5 @@ export class CreateRespuestaParqDto {
 
     @IsString()
     readonly preguntaParq: PreguntaParq;
+
 }

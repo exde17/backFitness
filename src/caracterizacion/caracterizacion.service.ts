@@ -16,6 +16,7 @@ export class CaracterizacionService {
     try {
       const caracterizacion = this.caracterizacionRepository.create({
         ...createCaracterizacionDto, 
+        terminada: true,
         user
       });
       await this.caracterizacionRepository.save(caracterizacion);
@@ -31,8 +32,17 @@ export class CaracterizacionService {
     return `This action returns all caracterizacion`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} caracterizacion`;
+  async findOne(id: string) {
+    try {
+      return await this.caracterizacionRepository.findOneOrFail({
+        // relations: ['user'],
+        where: { user: {id} },
+      });
+    } catch (error) {
+      console.log(error);
+      return error;
+      
+    }
   }
 
   update(id: number, updateCaracterizacionDto: UpdateCaracterizacionDto) {

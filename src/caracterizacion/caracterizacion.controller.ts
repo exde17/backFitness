@@ -24,8 +24,8 @@ export class CaracterizacionController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.caracterizacionService.findOne(+id);
+  async findOne(@Param('id') id: string) {
+    return this.caracterizacionService.findOne(id);
   }
 
   @Patch(':id')

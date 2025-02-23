@@ -18,4 +18,24 @@ export class RespuestaParq {
 
     @ManyToOne(()=> User, user => user.respuestaParq)
     user: User;
+
+    @Column('timestamp',{
+        nullable: false,
+        name: 'created_at',
+        default: () => 'CURRENT_TIMESTAMP'
+    })
+    createdAt: Date;
+
+    @Column('timestamp',{
+        nullable: false,
+        name: 'updated_at',
+        default: () => 'CURRENT_TIMESTAMP'
+    })
+    updatedAt: Date;
+
+    @Column('bool',{
+        nullable: false,
+        default: false  
+    })
+    terminada: boolean;
 }

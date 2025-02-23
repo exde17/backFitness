@@ -16,6 +16,7 @@ export class RespuestaParqService {
       const respuestaParq = this.respuestaParqRepository.create({
         preguntaParq: createRespuestaParqDto.preguntaParq,
         respuestaParq: createRespuestaParqDto.respuestaParq,
+        terminada: true,
         user,
       });
       await this.respuestaParqRepository.save(respuestaParq);
