@@ -6,13 +6,14 @@ import { RespuestaParq } from './entities/respuesta-parq.entity';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
+import { Parq } from '../entities/parq.entity';
 
 @Module({
   controllers: [RespuestaParqController],
   providers: [RespuestaParqService],
   imports: [
     ConfigModule,
-    TypeOrmModule.forFeature([RespuestaParq]),
+    TypeOrmModule.forFeature([RespuestaParq, Parq]),
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({
       imports:[ConfigModule],

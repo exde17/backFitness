@@ -18,14 +18,17 @@ export class RespuestaParqController {
     return this.respuestaParqService.create(createRespuestaParqDto, user);
   }
 
-  @Get()
-  findAll() {
-    return this.respuestaParqService.findAll();
-  }
+  // @Get()
+  // findAll() {
+  //   return this.respuestaParqService.findAll();
+  // }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.respuestaParqService.findOne(+id);
+  @Get()
+  @Auth()
+  findOne(
+    @GetUser() user: User,
+  ) {
+    return this.respuestaParqService.findRespuestasParqByUser(user);
   }
 
   @Patch(':id')
