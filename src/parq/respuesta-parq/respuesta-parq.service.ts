@@ -41,7 +41,7 @@ export class RespuestaParqService {
         },
       });
 
-      console.log('el ver: ',ver);
+      // console.log('el ver: ',ver);
 
       if (ver.length > 2) {
         const parq = this.parqRepository.create({

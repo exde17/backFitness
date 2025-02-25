@@ -9,6 +9,8 @@ import { JwtPayload } from './interfaces/jwt-payload.interface';
 import { JwtService } from '@nestjs/jwt';
 import { HttpExceptionFilter } from 'src/utils/http-exception.filter';
 import { DatosGenerale } from 'src/datos-generales/entities/datos-generale.entity';
+import { Caracterizacion } from 'src/caracterizacion/entities/caracterizacion.entity';
+import { Parq } from 'src/parq/entities/parq.entity';
 
 @Injectable()
 export class UserService {
@@ -17,57 +19,12 @@ export class UserService {
     private readonly jwtService: JwtService,
     @InjectRepository(DatosGenerale) private readonly datosGeneraleRepository: Repository<DatosGenerale>,
     private readonly dataSource: DataSource,
+    @InjectRepository(Caracterizacion)
+    private readonly caracterizacionRepository: Repository<Caracterizacion>,
+    @InjectRepository(Parq)
+    private readonly parqRepository: Repository<Parq>,
   ) {}
 
-  // async create(createUserDto: CreateUserDto) {
-  //   try {
-  //     const { password, ...userData } = createUserDto;
-
-  //     const user = this.userRepository.create({
-  //       ...userData,
-  //       password: await bcrypt.hashSync(password, 10),
-  //     });
-
-  //     await this.userRepository.save(user);
-
-  //     //guardo en datos generales
-  //     const datosGenerale = this.datosGeneraleRepository.create({
-  //       user: user,
-  //       name: createUserDto.name,
-  //       documentType: createUserDto.documentType,
-  //       documentNumber: createUserDto.documentNumber,
-  //       phoneNumber: createUserDto.phoneNumber,
-  //       birthDate: createUserDto.birthDate,
-  //       address: createUserDto.address,
-  //       barrio: createUserDto.barrio,
-  //       comunaCorregimiento: createUserDto.comunaCorregimiento,
-  //       etnia: createUserDto.etnia,
-  //       discapacidad: createUserDto.discapacidad,
-  //       gender: createUserDto.gender,
-  //       poblacionVulnerable: createUserDto.poblacionVulnerable,
-  //       nivelEducativo: createUserDto.nivelEducativo,
-  //       ocupacion: createUserDto.ocupacion,
-  //       regimenSalud: createUserDto.regimenSalud,
-  //       eps: createUserDto.eps,
-  //       grupoSanquineo: createUserDto.grupoSanquineo,
-  //       contactoEmergencia: createUserDto.contactoEmergencia,
-  //       telefonoContacto: createUserDto.telefonoContacto,
-  //     });
-
-  //     await this.datosGeneraleRepository.save(datosGenerale);
-
-  //     return {
-  //       ...user,
-  //       token: this.getJwtToken({ 
-  //         // email: user.email,
-  //         id: user.id, 
-  //       }),
-  //       password: undefined,
-  //     }
-  //   } catch (error) {
-  //     return error;
-  //   }
-  // }
 
   async create(createUserDto: CreateUserDto) {
     const queryRunner = this.dataSource.createQueryRunner();
@@ -134,39 +91,123 @@ export class UserService {
   }
 
   async login(loginUserDto: LoginUserDto) {
+    const queryRunner: QueryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction(); // 🔥 Inicia la transacción
+  
     try {
+      let caract = true;
+      let parq = true;
       const { email, password } = loginUserDto;
-
-      const user = await this.userRepository.findOne({ 
+  
+      // 📌 Buscar usuario en la base de datos dentro de la transacción
+      const user = await queryRunner.manager.findOne(User, {
         where: { email },
         select: ['email', 'password', 'id'],
-       });
-
-       if (!user){
-          throw new UnauthorizedException('Invalid imail');
-       }
-
-        const isPasswordValid = await bcrypt.compareSync(password, user.password);
-
-        if (!isPasswordValid){
-          throw new UnauthorizedException('Invalid password');
-        }
-
-        return {
-          ...user,
-          token: this.getJwtToken({ 
-            // email: user.email,
-            id: user.id,
-          }),
-          password: undefined,
-        }
-
+      });
+  
+      if (!user) {
+        throw new UnauthorizedException('Invalid email');
+      }
+  
+      const isPasswordValid = bcrypt.compareSync(password, user.password);
+      if (!isPasswordValid) {
+        throw new UnauthorizedException('Invalid password');
+      }
+  
+      // 📌 Consultar caracterización dentro de la transacción
+      const caracterizacion = await queryRunner.manager.findOne(Caracterizacion, {
+        where: { user: { id: user.id } },
+      });
+  
+      if (!caracterizacion || !caracterizacion.terminada) {
+        caract = false;
+      }
+  
+      // 📌 Consultar PAR-Q dentro de la transacción
+      const parqUser = await queryRunner.manager.findOne(Parq, {
+        where: { user: { id: user.id } },
+      });
+  
+      if (parqUser && !parqUser.aprobado) {
+        parq = false;
+      }
+  
+      // 🔥 Confirmar la transacción si todo está correcto
+      await queryRunner.commitTransaction();
+      await queryRunner.release();
+  
+      return {
+        ...user,
+        token: this.getJwtToken({ id: user.id }),
+        caracterizacion: caract,
+        parq: parq,
+        password: undefined,
+      };
+  
     } catch (error) {
-
-      return error;
-      
+      await queryRunner.rollbackTransaction(); // 🔥 Revertir cambios si hay error
+      await queryRunner.release();
+  
+      throw error;
     }
   }
+  // async login(loginUserDto: LoginUserDto) {
+  //   try {
+  //     let caract = true;
+  //     let parq= true;
+  //     const { email, password } = loginUserDto;
+
+  //     const user = await this.userRepository.findOne({ 
+  //       where: { email },
+  //       select: ['email', 'password', 'id'],
+  //      });
+
+  //      if (!user){
+  //         throw new UnauthorizedException('Invalid imail');
+  //      }
+
+  //       const isPasswordValid = await bcrypt.compareSync(password, user.password);
+
+  //       if (!isPasswordValid){
+  //         throw new UnauthorizedException('Invalid password');
+  //       }
+
+  //       // consulto que la caractirizacion este completa o si existe
+  //       const caracterizacion = await this.caracterizacionRepository.findOne({
+  //         where: { user: {id: user.id} },
+  //       }); 
+
+  //       if (!caracterizacion || !caracterizacion.terminada){
+  //         caract = false;
+  //       }
+
+  //       // consulto que el parq este completo o si existe
+  //       const parqUser = await this.parqRepository.findOne({
+  //         where: { user: {id: user.id} },
+  //       });
+
+  //       if (!parqUser.aprobado){
+  //         parq = false;
+  //       }
+
+  //       return {
+  //         ...user,
+  //         token: this.getJwtToken({ 
+  //           // email: user.email,
+  //           id: user.id,
+  //         }),
+  //         'caracterizacion': caract,
+  //         'parq': parq,
+  //         password: undefined,
+  //       }
+
+  //   } catch (error) {
+
+  //     return error;
+      
+  //   }
+  // }
 
   private getJwtToken(payload: JwtPayload){
     const token = this.jwtService.sign(payload);

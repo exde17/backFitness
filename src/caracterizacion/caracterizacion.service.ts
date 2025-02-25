@@ -36,7 +36,9 @@ export class CaracterizacionService {
     try {
       return await this.caracterizacionRepository.findOneOrFail({
         // relations: ['user'],
-        where: { user: {id} },
+        where: { 
+          user: {id},
+          terminada: true},
       });
     } catch (error) {
       console.log(error);
