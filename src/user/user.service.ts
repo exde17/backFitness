@@ -117,7 +117,10 @@ export class UserService {
   
       // 📌 Consultar caracterización dentro de la transacción
       const caracterizacion = await queryRunner.manager.findOne(Caracterizacion, {
-        where: { user: { id: user.id } },
+        where: { 
+          user: { id: user.id },
+          terminada: true,
+         },
       });
   
       if (!caracterizacion || !caracterizacion.terminada) {
