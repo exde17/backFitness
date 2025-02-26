@@ -132,7 +132,7 @@ export class UserService {
         where: { user: { id: user.id } },
       });
   
-      if (parqUser && !parqUser.aprobado) {
+      if (!parqUser) {
         parq = false;
       }
   
