@@ -25,6 +25,7 @@ import { RespuestaModule } from './respuesta/respuesta.module';
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
+      schema: 'public', // 🔥 Asegura que se usará el esquema 'public'
       autoLoadEntities: true,
       synchronize: true, // ⚠️ Usa migraciones en producción en vez de esto
       ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false, // 🔥 Solución para SSL
