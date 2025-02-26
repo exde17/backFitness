@@ -98,6 +98,7 @@ export class UserService {
     try {
       let caract = true;
       let parq = true;
+      let parqRealizado = false;
       const { email, password } = loginUserDto;
   
       // 📌 Buscar usuario en la base de datos dentro de la transacción
@@ -133,6 +134,10 @@ export class UserService {
       });
 
       console.log('hola: ',parqUser);
+
+      if(parqUser && parqUser.aprobado){
+        parqRealizado = true;
+      }
   
       if (!parqUser) {
         parq = false;
@@ -147,6 +152,7 @@ export class UserService {
         token: this.getJwtToken({ id: user.id }),
         caracterizacion: caract,
         parq: parq,
+        parqRealizado: parqRealizado,
         password: undefined,
       };
   
