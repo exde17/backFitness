@@ -131,6 +131,8 @@ export class UserService {
       const parqUser = await queryRunner.manager.findOne(Parq, {
         where: { user: { id: user.id } },
       });
+
+      console.log('hola: ',parqUser);
   
       if (!parqUser) {
         parq = false;
