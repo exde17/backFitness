@@ -17,7 +17,6 @@ export class CaracterizacionService {
       const caracterizacion = this.caracterizacionRepository.create({
         ...createCaracterizacionDto, 
         terminada: true,
-        user
       });
       await this.caracterizacionRepository.save(caracterizacion);
       return 'Caracterizacion creada';

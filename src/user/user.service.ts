@@ -104,7 +104,7 @@ export class UserService {
       // 📌 Buscar usuario en la base de datos dentro de la transacción
       const user = await queryRunner.manager.findOne(User, {
         where: { email },
-        select: ['email', 'password', 'id'],
+        select: ['email', 'password', 'id', 'role'],
       });
   
       if (!user) {
@@ -117,23 +117,23 @@ export class UserService {
       }
   
       // 📌 Consultar caracterización dentro de la transacción
-      const caracterizacion = await queryRunner.manager.findOne(Caracterizacion, {
-        where: { 
-          user: { id: user.id },
-          terminada: true,
-         },
-      });
+      // const caracterizacion = await queryRunner.manager.findOne(Caracterizacion, {
+      //   where: { 
+      //     user: { id: user.id },
+      //     terminada: true,
+      //    },
+      // });
   
-      if (!caracterizacion || !caracterizacion.terminada) {
-        caract = false;
-      }
+      // if (!caracterizacion || !caracterizacion.terminada) {
+      //   caract = false;
+      // }
   
       // 📌 Consultar PAR-Q dentro de la transacción
       const parqUser = await queryRunner.manager.findOne(Parq, {
         where: { user: { id: user.id } },
       });
 
-      console.log('hola: ',parqUser);
+      // console.log('hola: ',parqUser);
 
       if(parqUser && parqUser.aprobado){
         parqAprovado = true;
@@ -150,7 +150,8 @@ export class UserService {
       return {
         ...user,
         token: this.getJwtToken({ id: user.id }),
-        caracterizacion: caract,
+        // caracterizacion: caract,
+        roles: user.role,
         parq: parq,
         parqAprovado: parqAprovado,
         password: undefined,

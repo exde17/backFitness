@@ -12,6 +12,12 @@ export class ParqController {
     return this.parqService.create(createParqDto);
   }
 
+  // LISTA DE USUARIOS APROBADOS
+  @Get('aprobados')
+  findAllAprobados() {
+    return this.parqService.findAllAprobados();
+  }  
+
   @Get()
   findAll() {
     return this.parqService.findAll();

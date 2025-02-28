@@ -1,4 +1,5 @@
-import { IsEnum, IsNotEmpty, IsNumber } from "class-validator";
+import { IsEnum, IsNotEmpty, IsNumber, IsString, IsUUID } from "class-validator";
+import { User } from "src/user/entities/user.entity";
 import { GenderType } from "src/user/utils/genderType.enum";
 
 export class CreateCaracterizacionDto {
@@ -45,4 +46,8 @@ export class CreateCaracterizacionDto {
   @IsNumber()
   @IsNotEmpty()
   readonly perimetroPiernaMaxima: number;
+
+  @IsString()
+  @IsNotEmpty()
+  readonly user: User;
 }
