@@ -21,7 +21,7 @@ export class ParqService {
         relations: ['user.datosGenerales'],
         where: { 
           aprobado: true,
-          user: { role: Not(In(['monitor', 'superadmin'])) } // Excluir monitores y superadmin
+          // user: { role: Not(In(['monitor', 'superadmin'])) } // Excluir monitores y superadmin
          } 
       });
       console.log('Usuarios enviados desde el servidor:', rest);
