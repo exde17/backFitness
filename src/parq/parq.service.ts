@@ -3,7 +3,7 @@ import { CreateParqDto } from './dto/create-parq.dto';
 import { UpdateParqDto } from './dto/update-parq.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Parq } from './entities/parq.entity';
-import { Repository } from 'typeorm';
+import { In, Not, Repository } from 'typeorm';
 
 @Injectable()
 export class ParqService {
@@ -19,7 +19,10 @@ export class ParqService {
       let data = []
       const rest = await this.parqRepository.find({ 
         relations: ['user.datosGenerales'],
-        where: { aprobado: true } 
+        where: { 
+          aprobado: true,
+          user: { role: Not(In(['monitor', 'superadmin'])) } // Excluir monitores y superadmin
+         } 
       });
       console.log('Usuarios enviados desde el servidor:', rest);
 
