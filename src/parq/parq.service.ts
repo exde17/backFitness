@@ -26,7 +26,7 @@ export class ParqService {
       rest.forEach((item) => {
         data.push({
           id: item.user.id,
-          nombre: item.user.datosGenerales[0].name,
+          nombre: item.user.datosGenerales[0]?.name??'vacio',
           documentType: item.user.datosGenerales[0].documentType,
           documentNumber: item.user.datosGenerales[0].documentNumber,
           phoneNumber: item.user.datosGenerales[0].phoneNumber,
