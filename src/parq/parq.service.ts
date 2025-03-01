@@ -21,6 +21,7 @@ export class ParqService {
         relations: ['user.datosGenerales'],
         where: { aprobado: true } 
       });
+      console.log('Usuarios enviados desde el servidor:', rest);
 
       rest.forEach((item) => {
         data.push({
