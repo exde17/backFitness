@@ -16,6 +16,12 @@ async function bootstrap() {
       forbidNonWhitelisted: true,
     }),
   );
+
+  app.enableCors({
+    origin: 'http://fitness.joperico.xyz', // ⚠️ En producción, cambia "*" por el dominio de tu frontend
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true,
+  });
   await app.listen(process.env.PORT || 3000);
   logger.log(`Application is running on: ${process.env.PORT || 3000}`);
 }
