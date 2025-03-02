@@ -18,7 +18,7 @@ async function bootstrap() {
   );
 
   app.enableCors({
-    origin: 'http://fitness.joperico.xyz', // ⚠️ En producción, cambia "*" por el dominio de tu frontend
+    origin: 'https://fitness.joperico.xyz', // ⚠️ En producción, cambia "*" por el dominio de tu frontend
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
   });
