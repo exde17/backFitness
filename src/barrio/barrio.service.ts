@@ -44,8 +44,15 @@ export class BarrioService {
     return `This action returns a #${id} barrio`;
   }
 
-  update(id: number, updateBarrioDto: UpdateBarrioDto) {
-    return `This action updates a #${id} barrio`;
+  async update(id: string, updateBarrioDto: UpdateBarrioDto) {
+    try {
+      await this.barrioRepository.update(id, updateBarrioDto);
+      return 'Barrio actualizado';
+    } catch (error) {
+      console.log(error);
+      return 'Error al actualizar barrio';
+    }
+    
   }
 
   remove(id: number) {

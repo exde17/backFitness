@@ -27,7 +27,7 @@ export class BarrioController {
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateBarrioDto: UpdateBarrioDto) {
-    return this.barrioService.update(+id, updateBarrioDto);
+    return this.barrioService.update(id, updateBarrioDto);
   }
 
   @Delete(':id')
