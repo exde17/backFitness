@@ -17,4 +17,10 @@ export class Parque {
 
     @OneToMany(()=> Actividade, actividad => actividad.parque)
     actividad: Actividade[];
+
+    @Column('bool',{
+        nullable: false,
+        default: true,
+    })
+    estado: boolean;
 }

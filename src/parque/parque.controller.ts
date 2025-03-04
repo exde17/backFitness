@@ -2,13 +2,15 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { ParqueService } from './parque.service';
 import { CreateParqueDto } from './dto/create-parque.dto';
 import { UpdateParqueDto } from './dto/update-parque.dto';
+import { Auth } from 'src/user/decorator';
 
 @Controller('parque')
 export class ParqueController {
   constructor(private readonly parqueService: ParqueService) {}
 
   @Post()
-  create(@Body() createParqueDto: CreateParqueDto) {
+  @Auth()
+  async create(@Body() createParqueDto: CreateParqueDto) {
     return this.parqueService.create(createParqueDto);
   }
 

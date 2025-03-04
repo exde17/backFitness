@@ -8,5 +8,5 @@ export class CreateParqueDto {
 
     @IsString()
     @IsNotEmpty()
-    barrioId: Barrio;
+    barrio: Barrio;
 }

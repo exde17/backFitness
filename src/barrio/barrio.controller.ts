@@ -30,6 +30,12 @@ export class BarrioController {
     return this.barrioService.update(id, updateBarrioDto);
   }
 
+  //actualizar estado
+  @Patch('estado/:id')
+  updateEstado(@Param('id') id: string) {
+    return this.barrioService.updateEstado(id);
+  }
+
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.barrioService.remove(+id);

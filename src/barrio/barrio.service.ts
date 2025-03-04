@@ -58,4 +58,21 @@ export class BarrioService {
   remove(id: number) {
     return `This action removes a #${id} barrio`;
   }
+
+  //actualizar estado
+  async updateEstado(id: string) {  
+    try {
+      const barrio = await this.barrioRepository.findOne({
+        where:{
+          id
+        }
+      });
+      barrio.estado = !barrio.estado;
+      await this.barrioRepository.save(barrio);
+      return 'Estado actualizado';
+    } catch (error) {
+      console.log(error);
+      return 'Error al actualizar estado';
+    }
+  }
 }
