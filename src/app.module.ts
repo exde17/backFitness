@@ -4,7 +4,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from './user/user.module';
 import { CarnetModule } from './carnet/carnet.module';
 import { AsistenciaModule } from './asistencia/asistencia.module';
-import { ActividadModule } from './actividad/actividad.module';
 import { EncuestaModule } from './encuesta/encuesta.module';
 import { ParqModule } from './parq/parq.module';
 import { CaracterizacionModule } from './caracterizacion/caracterizacion.module';
@@ -14,6 +13,10 @@ import { PreguntaModule } from './pregunta/pregunta.module';
 import { TipoPreguntaModule } from './tipo-pregunta/tipo-pregunta.module';
 import { OpcionPreguntaModule } from './opcion-pregunta/opcion-pregunta.module';
 import { RespuestaModule } from './respuesta/respuesta.module';
+import { ActividadesModule } from './actividades/actividades.module';
+import { BarrioModule } from './barrio/barrio.module';
+import { ParqueModule } from './parque/parque.module';
+import { TipoActividadModule } from './tipo-actividad/tipo-actividad.module';
 
 @Module({
   imports: [
@@ -49,7 +52,6 @@ import { RespuestaModule } from './respuesta/respuesta.module';
     UserModule,
     CarnetModule,
     AsistenciaModule,
-    ActividadModule,
     EncuestaModule,
     ParqModule,
     CaracterizacionModule,
@@ -59,6 +61,10 @@ import { RespuestaModule } from './respuesta/respuesta.module';
     TipoPreguntaModule,
     OpcionPreguntaModule,
     RespuestaModule,
+    ActividadesModule,
+    BarrioModule,
+    ParqueModule,
+    TipoActividadModule,
   ],
 })
 export class AppModule {}
