@@ -9,4 +9,10 @@ export class TipoActividad {
         nullable: false,
     })
     nombre: string;
+
+    @Column('bool',{
+        nullable: false,
+        default: true,
+    })
+    estado: boolean;
 }
