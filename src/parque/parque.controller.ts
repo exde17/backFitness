@@ -25,8 +25,14 @@ export class ParqueController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateParqueDto: UpdateParqueDto) {
-    return this.parqueService.update(+id, updateParqueDto);
+  async update(@Param('id') id: string, @Body() updateParqueDto: UpdateParqueDto) {
+    return this.parqueService.update(id, updateParqueDto);
+  }
+
+  // cambiar estado
+  @Patch('estado/:id')
+  async cambiarEstado(@Param('id') id: string) {
+    return this.parqueService.cambiarEstado(id);
   }
 
   @Delete(':id')

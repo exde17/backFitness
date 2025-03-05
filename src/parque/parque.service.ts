@@ -43,8 +43,33 @@ export class ParqueService {
     return `This action returns a #${id} parque`;
   }
 
-  update(id: number, updateParqueDto: UpdateParqueDto) {
-    return `This action updates a #${id} parque`;
+  async update(id: string, updateParqueDto: UpdateParqueDto) {
+    try {
+      const parque = await this.parqueRepository.findOne({
+        where: {id}
+      });
+      this.parqueRepository.merge(parque, updateParqueDto);
+      return await this.parqueRepository.save(parque);
+    } catch (error) {
+      console.log(error);
+      return 'Error al actualizar el parque';
+      
+    }
+  }
+
+  // cambiar estado
+  async cambiarEstado(id: string) {
+    try {
+      const parque = await this.parqueRepository.findOne({
+        where: {id}
+      });
+      parque.estado = !parque.estado;
+      return await this.parqueRepository.save(parque);
+    } catch (error) {
+      console.log(error);
+      return 'Error al cambiar el estado del parque';
+      
+    }
   }
 
   remove(id: number) {
