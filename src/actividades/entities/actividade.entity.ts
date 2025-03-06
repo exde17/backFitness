@@ -43,4 +43,10 @@ export class Actividade {
 
     @ManyToOne(()=> Parque, parque => parque.actividad)
     parque: Parque;
+
+    @Column('bool',{
+        nullable: false,
+        default: true,
+    })
+    estado: boolean;
 }

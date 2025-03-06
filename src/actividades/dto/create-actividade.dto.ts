@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString } from "class-validator";
+import { IsNotEmpty, IsOptional, IsString } from "class-validator";
 import { Parque } from "src/parque/entities/parque.entity";
 import { User } from "src/user/entities/user.entity";
 
@@ -19,8 +19,8 @@ export class CreateActividadeDto {
     hora: Date;
 
     @IsString()
-    @IsNotEmpty()
-    user: User;
+    @IsOptional()
+    user?: User;
 
     @IsString()
     @IsNotEmpty()

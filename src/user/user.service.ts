@@ -241,4 +241,21 @@ export class UserService {
   remove(id: number) {
     return `This action removes a #${id} user`;
   }
+
+  // traer los usuarios con rol monitor
+  async findMonitores(){
+    try {
+      const monitores = await this.userRepository.find({
+        where: {
+          isActive: true,
+        }
+      });
+
+      const monitoresFiltrados = monitores.filter((monitor) => monitor.role.includes('monitor'));
+      return monitoresFiltrados;
+    } catch (error) {
+      console.log(error);
+      return 'Error al obtener los monitores';
+    }
+  }
 }

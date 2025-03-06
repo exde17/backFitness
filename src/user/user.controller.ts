@@ -77,6 +77,13 @@ export class UserController {
     };
   }
 
+  // traer los usuarios con rol monitor
+  @Get('monitor')
+  @Auth()
+  findMonitores(){
+    return this.userService.findMonitores();
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.userService.findOne(+id);
