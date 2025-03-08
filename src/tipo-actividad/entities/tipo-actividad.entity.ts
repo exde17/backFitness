@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Actividade } from "src/actividades/entities/actividade.entity";
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class TipoActividad {
@@ -15,4 +16,7 @@ export class TipoActividad {
         default: true,
     })
     estado: boolean;
+
+    @OneToMany(()=> Actividade, actividad => actividad.tipoActividad)
+    actividad: Actividade[];
 }

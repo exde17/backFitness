@@ -246,9 +246,11 @@ export class UserService {
   async findMonitores(){
     try {
       const monitores = await this.userRepository.find({
+        
         where: {
           isActive: true,
-        }
+        },
+        relations: ['datosGenerales'],
       });
 
       const monitoresFiltrados = monitores.filter((monitor) => monitor.role.includes('monitor'));

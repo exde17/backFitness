@@ -1,4 +1,5 @@
 import { Parque } from "src/parque/entities/parque.entity";
+import { TipoActividad } from "src/tipo-actividad/entities/tipo-actividad.entity";
 import { User } from "src/user/entities/user.entity";
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
@@ -43,6 +44,9 @@ export class Actividade {
 
     @ManyToOne(()=> Parque, parque => parque.actividad)
     parque: Parque;
+
+    @ManyToOne(()=> TipoActividad, tipoActividad => tipoActividad.actividad)
+    tipoActividad: TipoActividad;
 
     @Column('bool',{
         nullable: false,
