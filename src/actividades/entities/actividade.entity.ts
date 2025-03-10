@@ -1,7 +1,8 @@
+import { Asistencia } from "src/asistencia/entities/asistencia.entity";
 import { Parque } from "src/parque/entities/parque.entity";
 import { TipoActividad } from "src/tipo-actividad/entities/tipo-actividad.entity";
 import { User } from "src/user/entities/user.entity";
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class Actividade {
@@ -47,6 +48,9 @@ export class Actividade {
 
     @ManyToOne(()=> TipoActividad, tipoActividad => tipoActividad.actividad)
     tipoActividad: TipoActividad;
+
+    @OneToMany(()=> Asistencia, asistencia => asistencia.actividad)
+    asistencias: Asistencia[];
 
     @Column('bool',{
         nullable: false,

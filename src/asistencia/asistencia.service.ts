@@ -1,11 +1,27 @@
 import { Injectable } from '@nestjs/common';
 import { CreateAsistenciaDto } from './dto/create-asistencia.dto';
 import { UpdateAsistenciaDto } from './dto/update-asistencia.dto';
+import { Repository } from 'typeorm';
+import { Asistencia } from './entities/asistencia.entity';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class AsistenciaService {
-  create(createAsistenciaDto: CreateAsistenciaDto) {
-    return 'This action adds a new asistencia';
+  constructor(
+    @InjectRepository(Asistencia)
+    private readonly asistenciaRepository: Repository<Asistencia>,
+  ){}
+
+  async create(createAsistenciaDto: CreateAsistenciaDto) {
+    try {
+      const asistencia = this.asistenciaRepository.create(createAsistenciaDto);
+      await this.asistenciaRepository.save(asistencia);
+      return 'asistencia creada con exito';
+    } catch (error) {
+      console.log(error);
+      return 'Error al crear la asistencia';
+      
+    }
   }
 
   findAll() {
