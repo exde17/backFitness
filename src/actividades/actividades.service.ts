@@ -42,26 +42,6 @@ export class ActividadesService {
     }
   }
 
-  // traer actividades de el dia actual
-  // async findDia() {
-  //   try {
-  //     // Obtener la fecha actual en la zona horaria de Colombia
-  //     const actividades = await this.actividadeRepository.createQueryBuilder('actividad')
-  //       .leftJoinAndSelect('actividad.user', 'user')
-  //       .leftJoinAndSelect('actividad.parque', 'parque')
-  //       .where("DATE(actividad.fecha AT TIME ZONE 'UTC' AT TIME ZONE 'America/Bogota') = CURRENT_DATE")
-  //       .andWhere("actividad.estado = true")
-  //       .getMany();
-
-
-
-  //     return actividades;
-  //   } catch (error) {
-  //     console.log(error);
-  //     return 'Error al obtener las actividades';
-  //   }
-  // }
-
   async findDia() {
     try {
       // Obtener la fecha de hoy en formato YYYY-MM-DD
