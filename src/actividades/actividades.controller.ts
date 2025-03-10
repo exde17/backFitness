@@ -26,6 +26,13 @@ export class ActividadesController {
     return this.actividadesService.createAdmin(createActividadeDto);
   }
 
+  // traer actividades de el dia actual
+  @Get('dia')
+  @Auth()
+  async findDia() {
+    return this.actividadesService.findDia();
+  }
+
   @Get()
   @Auth()
   findAll() {

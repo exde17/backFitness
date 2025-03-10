@@ -5,6 +5,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Actividade } from './entities/actividade.entity';
 import { Repository } from 'typeorm';
 import { User } from 'src/user/entities/user.entity';
+import { Between } from 'typeorm';
+import * as moment from 'moment-timezone';
+import { Raw } from 'typeorm';
 
 @Injectable()
 export class ActividadesService {
@@ -39,6 +42,49 @@ export class ActividadesService {
     }
   }
 
+  // traer actividades de el dia actual
+  // async findDia() {
+  //   try {
+  //     // Obtener la fecha actual en la zona horaria de Colombia
+  //     const actividades = await this.actividadeRepository.createQueryBuilder('actividad')
+  //       .leftJoinAndSelect('actividad.user', 'user')
+  //       .leftJoinAndSelect('actividad.parque', 'parque')
+  //       .where("DATE(actividad.fecha AT TIME ZONE 'UTC' AT TIME ZONE 'America/Bogota') = CURRENT_DATE")
+  //       .andWhere("actividad.estado = true")
+  //       .getMany();
+
+
+
+  //     return actividades;
+  //   } catch (error) {
+  //     console.log(error);
+  //     return 'Error al obtener las actividades';
+  //   }
+  // }
+
+  async findDia() {
+    try {
+      // Obtener la fecha de hoy en formato YYYY-MM-DD
+      const today = new Date().toISOString().split('T')[0]; // "2025-03-09"
+  
+      console.log(`Buscando actividades con fecha: ${today}`);
+  
+      const actividades = await this.actividadeRepository.find({
+        relations: ['user.datosGenerales', 'parque'],
+        where: {
+          fecha: Raw((alias) => `CAST(${alias} AS TEXT) = :today`, { today }),
+          estado: true,
+        },
+      });
+  
+      return actividades;
+    } catch (error) {
+      console.log(error);
+      return 'Error al obtener las actividades';
+    }
+  }
+
+
   async findAll() {
     try {
       return await this.actividadeRepository.find({
@@ -47,11 +93,11 @@ export class ActividadesService {
           estado: true
         }
       });
-      
+
     } catch (error) {
       console.log(error);
       return 'Error al obtener las actividades';
-      
+
     }
   }
 
@@ -74,16 +120,16 @@ export class ActividadesService {
     try {
       await this.actividadeRepository.update(id, updateActividadeDto);
       return 'Actividad actualizada';
-      
+
     } catch (error) {
       console.log(error);
       return 'Error al actualizar la actividad';
-      
+
     }
   }
 
   // cambiar estado de la actividad
-  async updateStado(id: string){
+  async updateStado(id: string) {
     try {
       const actividad = await this.actividadeRepository.findOne({
         where: {
@@ -93,12 +139,12 @@ export class ActividadesService {
       actividad.estado = !actividad.estado;
       await this.actividadeRepository.save(actividad);
       return 'Estado de la actividad actualizado';
-      
+
     } catch (error) {
       console.log(error);
       return 'Error al actualizar el estado de la actividad';
+    }
   }
-}
 
   remove(id: number) {
     return `This action removes a #${id} actividade`;
