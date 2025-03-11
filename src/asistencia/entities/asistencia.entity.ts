@@ -1,6 +1,6 @@
 import { Actividade } from "src/actividades/entities/actividade.entity";
 import { User } from "src/user/entities/user.entity";
-import { Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class Asistencia {
@@ -11,6 +11,11 @@ export class Asistencia {
     @ManyToOne(() => User, user => user.asistencias)
     user: User;
 
-    @ManyToOne(()=>Actividade, actividade => actividade.asistencias)
+    @ManyToOne(() => Actividade, actividade => actividade.asistencias)
     actividad: Actividade;
+
+    @Column('date', {
+        nullable: false,
+    })
+    fecha: Date;
 }
