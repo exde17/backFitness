@@ -103,8 +103,9 @@ export class UserService {
   
       // 📌 Buscar usuario en la base de datos dentro de la transacción
       const user = await queryRunner.manager.findOne(User, {
+        relations: ['datosGenerales'],
         where: { email },
-        select: ['email', 'password', 'id', 'role'],
+        select: ['email', 'password', 'id', 'role', 'datosGenerales'],
       });
   
       if (!user) {
@@ -148,12 +149,17 @@ export class UserService {
       await queryRunner.release();
   
       return {
-        ...user,
+        // ...user,
+        id: user.id,
+        email: user.email,
+        name: user.datosGenerales[0].name,
+        documento: user.datosGenerales[0].documentNumber,
         token: this.getJwtToken({ id: user.id }),
         // caracterizacion: caract,
-        roles: user.role,
+        role: user.role,
         parq: parq,
         parqAprovado: parqAprovado,
+        
         password: undefined,
       };
   

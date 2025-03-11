@@ -4,7 +4,8 @@ import { User } from "src/user/entities/user.entity";
 
 export class CreateAsistenciaDto {
     @IsString()
-    user: User;
+    documento: string;
+    // user: User;
 
     @IsString()
     actividad: Actividade;

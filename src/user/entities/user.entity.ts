@@ -88,8 +88,8 @@ export class User {
   @OneToMany(()=> Actividade, actividad => actividad.user)
   actividad: Actividade[];
 
-  @OneToMany(()=> Asistencia, asistencia => asistencia.user)
-  asistencias: Asistencia[];
+  // @OneToMany(()=> Asistencia, asistencia => asistencia.user)
+  // asistencias: Asistencia[];
 
   @BeforeInsert()
   emailToLowerCase() {

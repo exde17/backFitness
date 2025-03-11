@@ -18,7 +18,8 @@ export class AsistenciaService {
       const asistenciaExistente = await this.asistenciaRepository.findOne({
         relations: ['user', 'actividad'],
         where: {
-          user: {id:createAsistenciaDto.user.id},
+          // user: {id:createAsistenciaDto.user.id},
+          documento: createAsistenciaDto.documento,
           actividad: {id: createAsistenciaDto.actividad.id},
         }
       });

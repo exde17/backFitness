@@ -8,8 +8,13 @@ export class Asistencia {
     @PrimaryGeneratedColumn()
     id: string;
 
-    @ManyToOne(() => User, user => user.asistencias)
-    user: User;
+    // @ManyToOne(() => User, user => user.asistencias)
+    // user: User;
+
+    @Column('text', {
+        nullable: false,
+    })
+    documento: string;
 
     @ManyToOne(() => Actividade, actividade => actividade.asistencias)
     actividad: Actividade;
