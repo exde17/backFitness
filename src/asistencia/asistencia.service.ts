@@ -14,7 +14,10 @@ export class AsistenciaService {
 
   async create(createAsistenciaDto: CreateAsistenciaDto) {
     try {
-      const asistencia = this.asistenciaRepository.create(createAsistenciaDto);
+      const asistencia = this.asistenciaRepository.create({
+        ...createAsistenciaDto,
+        fecha: new Date(),
+      });
       await this.asistenciaRepository.save(asistencia);
       return 'asistencia creada con exito';
     } catch (error) {
