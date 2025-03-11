@@ -15,16 +15,16 @@ export class AsistenciaService {
   async create(createAsistenciaDto: CreateAsistenciaDto) {
     try {
       // verifico si existe alguna asistencia con el mismo usuario y la misma actividad
-      const asistenciaExistente = await this.asistenciaRepository.findOne({
-        where: {
-          user: createAsistenciaDto.user,
-          actividad: createAsistenciaDto.actividad,
-        }
-      });
+      // const asistenciaExistente = await this.asistenciaRepository.findOne({
+      //   where: {
+      //     user: createAsistenciaDto.user,
+      //     actividad: createAsistenciaDto.actividad,
+      //   }
+      // });
 
-      if(asistenciaExistente){
-        return 'Ya existe una asistencia para esta actividad';
-      }
+      // if(asistenciaExistente){
+      //   return 'Ya existe una asistencia para esta actividad';
+      // }
       const asistencia = this.asistenciaRepository.create({
         ...createAsistenciaDto,
         fecha: new Date(),
