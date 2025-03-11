@@ -16,7 +16,7 @@ export class AsistenciaService {
     try {
       // verifico si existe alguna asistencia con el mismo usuario y la misma actividad
       const asistenciaExistente = await this.asistenciaRepository.findOne({
-        relations: ['user', 'actividad'],
+        relations: [ 'actividad'],
         where: {
           // user: {id:createAsistenciaDto.user.id},
           documento: createAsistenciaDto.documento,
