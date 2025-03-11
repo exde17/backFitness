@@ -15,7 +15,7 @@ export class Asistencia {
     actividad: Actividade;
 
     @Column('date', {
-        nullable: false,
+        nullable: true,
     })
     fecha: Date;
 }
