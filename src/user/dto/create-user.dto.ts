@@ -46,7 +46,7 @@ export class CreateUserDto {
   
     @IsNumber()
     @IsNotEmpty()
-    readonly documentNumber: number;
+    readonly documentNumber: string;
   
     @IsString()
     @IsNotEmpty()

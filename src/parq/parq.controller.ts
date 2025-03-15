@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { ParqService } from './parq.service';
 import { CreateParqDto } from './dto/create-parq.dto';
 import { UpdateParqDto } from './dto/update-parq.dto';
@@ -13,10 +13,15 @@ export class ParqController {
   }
 
   // LISTA DE USUARIOS APROBADOS
+  // @Get('aprobados')
+  // findAllAprobados() {
+  //   return this.parqService.findAllAprobados();
+  // }  
   @Get('aprobados')
-  findAllAprobados() {
-    return this.parqService.findAllAprobados();
-  }  
+findAllAprobados(@Query('name') name?: string, @Query('documentNumber') documentNumber?: string) {
+    return this.parqService.findAllAprobados(name, documentNumber);
+}
+
 
   @Get()
   findAll() {

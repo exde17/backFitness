@@ -23,6 +23,13 @@ export class CaracterizacionController {
     return this.caracterizacionService.findAll();
   }
 
+  //traer todas las caracterizaciones de un usuario
+  @Get('user')
+  @Auth()
+  async findAllByUser(@GetUser() user: User) {
+    return this.caracterizacionService.findAllByUser(user);
+  }
+
   @Get(':id')
   async findOne(@Param('id') id: string) {
     return this.caracterizacionService.findOne(id);

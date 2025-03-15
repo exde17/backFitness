@@ -22,11 +22,11 @@ export class DatosGenerale {
       })
       documentType: DocumentType;
     
-      @Column('numeric',{
-        nullable: false,
+      @Column('text',{
+        nullable: true,
         name: 'document_number',
       })
-      documentNumber: number;
+      documentNumber: string;
 
       @Column('text', {
         nullable: false,

@@ -11,9 +11,9 @@ export class CreateDatosGeneraleDto {
   @IsNotEmpty()
   readonly documentType: DocumentType;
 
-  @IsNumber()
+  @IsString()
   @IsNotEmpty()
-  readonly documentNumber: number;
+  readonly documentNumber: string;
 
   @IsString()
   @IsNotEmpty()

@@ -46,6 +46,18 @@ export class CaracterizacionService {
     }
   }
 
+  //traer todas las caracterizaciones de un usuario
+  async findAllByUser(user: User) {
+    try {
+      return await this.caracterizacionRepository.find({
+        where: { user: {id: user.id}},
+      });
+    } catch (error) {
+      console.log(error);
+      return error; 
+    }
+  }
+
   update(id: number, updateCaracterizacionDto: UpdateCaracterizacionDto) {
     return `This action updates a #${id} caracterizacion`;
   }
