@@ -34,13 +34,13 @@ async findAllAprobados(name?: string, documentNumber?: string) {
             queryOptions.where.user.datosGenerales = queryOptions.where.user.datosGenerales || {};
             queryOptions.where.user.datosGenerales.documentNumber = ILike(`%${documentNumber}%`);
         }
-        console.log('name:', name);
-        console.log('documentNumber:', documentNumber);
+        // console.log('name:', name);
+        // console.log('documentNumber:', documentNumber);
 
         
 
         const rest = await this.parqRepository.find(queryOptions);
-        console.log('Usuarios enviados desde el servidor:', rest);
+        // console.log('Usuarios enviados desde el servidor:', rest);
 
         rest.forEach((item) => {
             data.push({
