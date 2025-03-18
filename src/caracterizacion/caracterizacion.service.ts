@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Caracterizacion } from './entities/caracterizacion.entity';
 import { Repository } from 'typeorm';
 import { User } from 'src/user/entities/user.entity';
+import e from 'express';
 
 @Injectable()
 export class CaracterizacionService {
@@ -39,6 +40,26 @@ export class CaracterizacionService {
           user: {id},
           terminada: true},
       });
+    } catch (error) {
+      console.log(error);
+      return error;
+      
+    }
+  }
+
+  // cambiar estado de la caracterizacion
+  async updateEstado(id: string) {
+    try {
+      const caracterizacion = await this.caracterizacionRepository.find({
+        relations: ['user'],
+        where: { 
+          user: {id},
+          terminada: true
+      },})
+
+      caracterizacion[0].terminada = false;
+      await this.caracterizacionRepository.save(caracterizacion[0]);
+      return 'accion realizada';
     } catch (error) {
       console.log(error);
       return error;

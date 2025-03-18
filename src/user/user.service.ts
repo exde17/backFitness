@@ -118,16 +118,16 @@ export class UserService {
       }
   
       // 📌 Consultar caracterización dentro de la transacción
-      // const caracterizacion = await queryRunner.manager.findOne(Caracterizacion, {
-      //   where: { 
-      //     user: { id: user.id },
-      //     terminada: true,
-      //    },
-      // });
+      const caracterizacion = await queryRunner.manager.findOne(Caracterizacion, {
+        where: { 
+          user: { id: user.id },
+          terminada: true,
+         },
+      });
   
-      // if (!caracterizacion || !caracterizacion.terminada) {
-      //   caract = false;
-      // }
+      if (!caracterizacion || !caracterizacion.terminada) {
+        caract = false;
+      }
   
       // 📌 Consultar PAR-Q dentro de la transacción
       const parqUser = await queryRunner.manager.findOne(Parq, {
@@ -155,7 +155,7 @@ export class UserService {
         name: user.datosGenerales[0].name,
         documento: user.datosGenerales[0].documentNumber,
         token: this.getJwtToken({ id: user.id }),
-        // caracterizacion: caract,
+        caracterizacion: caract,
         role: user.role,
         parq: parq,
         parqAprovado: parqAprovado,

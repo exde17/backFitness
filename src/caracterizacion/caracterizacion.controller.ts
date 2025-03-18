@@ -35,6 +35,13 @@ export class CaracterizacionController {
     return this.caracterizacionService.findOne(id);
   }
 
+  // cambiar estado de la caracterizacion
+  @Patch('estado/:id')
+  @Auth()
+  async updateEstado(@Param('id') id: string) {
+    return this.caracterizacionService.updateEstado(id);
+  }
+
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateCaracterizacionDto: UpdateCaracterizacionDto) {
     return this.caracterizacionService.update(+id, updateCaracterizacionDto);

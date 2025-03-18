@@ -22,6 +22,18 @@ findAllAprobados(@Query('name') name?: string, @Query('documentNumber') document
     return this.parqService.findAllAprobados(name, documentNumber);
 }
 
+//lista de usuarios no abrobados
+@Get('noaprobados')
+finAllNoAprobados() {
+  return this.parqService.findAllNoAprobados();
+}
+
+// cambiar estado de aprobado
+@Patch('stado/:id')
+updateAprobado(@Param('id') id: string) {
+  return this.parqService.updateAprobado(id);
+}
+
 
   @Get()
   findAll() {
