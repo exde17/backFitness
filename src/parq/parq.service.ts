@@ -166,7 +166,7 @@ async findAllNoAprobados() {
         comunaCorregimiento: item.user.datosGenerales[0]?.comunaCorregimiento ?? 'vacio',
         aprobado: item.aprobado,
         etnia: item.user.datosGenerales[0]?.etnia ?? 'vacio',
-        genero: item.user.datosGenerales[0].gender ?? 'vacio',
+        genero: item.user.datosGenerales[0]?.gender ?? 'vacio',
         discapacidad: item.user.datosGenerales[0]?.discapacidad ?? 'vacio',
         preguntas: respuestaParq.map((resp) => ({
           id: resp.preguntaParq.id,
