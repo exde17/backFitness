@@ -21,6 +21,7 @@ import { RoleProtected } from './decorator/role-protected/role-protected.decorat
 import { ValidRoles } from './interfaces';
 import { Auth } from './decorator';
 import { HttpExceptionFilter } from 'src/utils/http-exception.filter';
+import { CreateMonitorDto } from './dto/create-monitor.dto';
 // import { UpdateUserDto } from './dto/update-user.dto';
 
 @Controller('auth')
@@ -97,5 +98,12 @@ export class UserController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.userService.remove(+id);
+  }
+
+  // crear monitor
+  @Post('monitor')
+  @Auth()
+  createMonitor(@Body() createMonitorDto: CreateMonitorDto){
+    return this.userService.createMonitor(createMonitorDto);
   }
 }

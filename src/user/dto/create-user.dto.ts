@@ -4,6 +4,7 @@ import {
   IsEnum,
   IsNotEmpty,
   IsNumber,
+  IsOptional,
   IsString,
   Matches,
   MaxLength,
@@ -38,7 +39,7 @@ export class CreateUserDto {
 
     @IsString()
     @IsNotEmpty()
-    readonly name: string;
+    readonly name: string; 
   
     @IsEnum(DocumentType)
     @IsNotEmpty()
@@ -89,8 +90,8 @@ export class CreateUserDto {
     readonly nivelEducativo: string;
   
     @IsString()
-    @IsNotEmpty()
-    readonly ocupacion: string;
+    @IsOptional()
+    readonly ocupacion?: string;
   
     @IsString()
     @IsNotEmpty()

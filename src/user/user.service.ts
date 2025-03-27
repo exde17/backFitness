@@ -11,6 +11,7 @@ import { HttpExceptionFilter } from 'src/utils/http-exception.filter';
 import { DatosGenerale } from 'src/datos-generales/entities/datos-generale.entity';
 import { Caracterizacion } from 'src/caracterizacion/entities/caracterizacion.entity';
 import { Parq } from 'src/parq/entities/parq.entity';
+import { CreateMonitorDto } from './dto/create-monitor.dto';
 
 @Injectable()
 export class UserService {
@@ -266,4 +267,36 @@ export class UserService {
       return 'Error al obtener los monitores';
     }
   }
+
+  // crear monitor
+  async createMonitor(createMonitorDto: CreateMonitorDto) {
+    const queryRunner = this.dataSource.createQueryRunner();  
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      const { password, ...userData } = createMonitorDto;
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const user = this.userRepository.create({
+        ...userData,
+        password: hashedPassword,
+        role: ['monitor'],
+      });
+      const savedUser = await queryRunner.manager.save(user);
+      const datosGenerale = this.datosGeneraleRepository.create({
+      });
+      await queryRunner.manager.save(datosGenerale);
+      await queryRunner.commitTransaction();
+      return {
+        ...savedUser,
+        token: this.getJwtToken({ id: savedUser.id }),
+        password: undefined,
+      };
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw new Error(`Error al crear monitor: ${error.message}`);
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
 }

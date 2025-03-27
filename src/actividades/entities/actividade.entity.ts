@@ -9,10 +9,10 @@ export class Actividade {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
-    @Column('text',{
-        nullable: false,
-    })
-    nombre: string;
+    // @Column('text',{
+    //     nullable: false,
+    // })
+    // nombre: string;
 
     // fecha de actividad
     @Column('date',{

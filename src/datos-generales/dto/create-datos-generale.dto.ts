@@ -1,4 +1,4 @@
-import { IsDateString, IsEnum, IsNotEmpty, IsNumber, IsString } from "class-validator";
+import { IsDateString, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
 import { GenderType } from "src/user/utils/genderType.enum";
 import { DocumentType } from "../../user/utils/documentType.enum";
 
@@ -56,8 +56,8 @@ export class CreateDatosGeneraleDto {
   readonly nivelEducativo: string;
 
   @IsString()
-  @IsNotEmpty()
-  readonly ocupacion: string;
+  @IsOptional()
+  readonly ocupacion?: string;
 
   @IsString()
   @IsNotEmpty()

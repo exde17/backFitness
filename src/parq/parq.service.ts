@@ -145,14 +145,14 @@ async findAllNoAprobados() {
     };
 
     const rest = await this.parqRepository.find(queryOptions);
-    console.log('Usuarios enviados desde el servidor:', rest);
+    // console.log('Usuarios enviados desde el servidor:', rest);
 
     for (const item of rest) {
       const respuestaParq = await this.respuestaParqRepository.find({
         relations: ['preguntaParq'],
         where: { user: { id: item.user.id } }
       });
-      console.log('respuestaParq:', respuestaParq);
+      // console.log('respuestaParq:', respuestaParq);
 
       data.push({
         id: item.user.id,

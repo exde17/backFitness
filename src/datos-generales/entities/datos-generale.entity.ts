@@ -9,7 +9,7 @@ export class DatosGenerale {
     id: string;
 
      @Column('text', {
-        nullable: false,
+        nullable: true,
         name: 'first_name',
       })
       name: string;
@@ -17,7 +17,7 @@ export class DatosGenerale {
       //enum de tipo documento
       @Column('enum', {
         enum: DocumentType,
-        nullable: false,
+        nullable: true,
         name: 'document_type',
       })
       documentType: DocumentType;
@@ -29,97 +29,97 @@ export class DatosGenerale {
       documentNumber: string;
 
       @Column('text', {
-        nullable: false,
+        nullable: true,
         name: 'phone_number',
       })
         phoneNumber: string;
 
      //fecha de nacimiento
         @Column('date', {
-            nullable: false,
+            nullable: true,
             name: 'birth_date',
         })
         birthDate: Date;
     
         @Column('text', {
-            nullable: false,
+            nullable: true,
             name: 'address',
         })
         address: string;
     
         @Column('text', {
-            nullable: false,
+            nullable: true,
             name: 'barrio',
         })
         barrio: string;
     
         @Column('text', {
-            nullable: false,
+            nullable: true,
             name: 'comuna_corregimiento',
         })
         comunaCorregimiento: string;
     
         @Column('text', {
-            nullable: false,
+            nullable: true,
             name: 'etnia',
         })
         etnia: string;
     
         @Column('text', {
-            nullable: false,
+            nullable: true,
             name: 'discapacidad',
         })
         discapacidad: string;
     
         @Column('enum',{
             enum: GenderType,
-            nullable: false,
+            nullable: true,
         })
         gender: GenderType;
 
         @Column('text',{
-            nullable: false,
+            nullable: true,
             name: 'poblacion_bulnerable',
         })
         poblacionVulnerable: string;
 
         @Column('text',{
-            nullable: false,
+            nullable: true,
             name: 'nivel_educativo',
         })
         nivelEducativo: string;
 
         @Column('text',{
-            nullable: false,
+            nullable: true,
             name: 'ocupacion',
         })
         ocupacion: string;
 
         @Column('text',{
-            nullable: false,
+            nullable: true,
             name: 'regimen_salud',
         })
         regimenSalud: string;
 
         @Column('text',{
-            nullable: false,
+            nullable: true,
         })
         eps: string;
 
         @Column('text',{
-            nullable: false,
+            nullable: true,
             name: 'grupo_sanquineo',
         })
         grupoSanquineo: string;
 
         @Column('text',{
-            nullable: false,
+            nullable: true,
             name: 'contacto_emergencia',
         })
         contactoEmergencia: string;
 
         @Column('text',{
-            nullable: false,
+            nullable: true,
             name: 'telefono_contacto',
         })
         telefonoContacto: string;

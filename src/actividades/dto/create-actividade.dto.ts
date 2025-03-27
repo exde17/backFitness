@@ -5,9 +5,9 @@ import { User } from "src/user/entities/user.entity";
 
 export class CreateActividadeDto {
 
-    @IsString()
-    @IsNotEmpty()
-    nombre: string;
+    // @IsString()
+    // @IsNotEmpty()
+    // nombre: string;
 
     // fecha de actividad
     @IsString()
