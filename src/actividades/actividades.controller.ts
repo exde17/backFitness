@@ -51,6 +51,16 @@ export class ActividadesController {
     return this.actividadesService.update(id, updateActividadeDto);
   }
 
+  // cancelar actividad
+  @Patch('cancelar/:id')
+  @Auth()
+  updateCancelada(
+    @Param('id') id: string,
+    @Body('motivoCancelado') motivoCancelado: string
+  ) {
+    return this.actividadesService.updateCancelada(id, motivoCancelado);
+  }
+
   // cambiar estado
   @Patch('estado/:id')
   @Auth()

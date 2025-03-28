@@ -50,10 +50,10 @@ export class ActividadesService {
       console.log(`Buscando actividades con fecha: ${today}`);
   
       const actividades = await this.actividadeRepository.find({
-        relations: ['user.datosGenerales', 'parque'],
+        relations: ['user.datosGenerales', 'parque', 'tipoActividad'],
         where: {
           fecha: Raw((alias) => `CAST(${alias} AS TEXT) = :today`, { today }),
-          estado: true,
+          // estado: true,
         },
       });
   
@@ -105,6 +105,24 @@ export class ActividadesService {
       console.log(error);
       return 'Error al actualizar la actividad';
 
+    }
+  }
+
+  // cancelar actividad
+  async updateCancelada(id: string, motivoCancelado: string) {
+    try {
+      const actividad = await this.actividadeRepository.findOne({
+        where: {
+          id
+        }
+      });
+      actividad.motivoCancelado = motivoCancelado;
+      actividad.estado = false;
+      await this.actividadeRepository.save(actividad);
+      return 'Actividad cancelada';
+    } catch (error) {
+      console.log(error);
+      return 'Error al cancelar la actividad';
     }
   }
 
