@@ -44,19 +44,19 @@ export class ActividadesService {
 
   async findDia() {
     try {
-      // Obtener la fecha de hoy en formato YYYY-MM-DD
-      const today = new Date().toISOString().split('T')[0]; // "2025-03-09"
-  
-      console.log(`Buscando actividades con fecha: ${today}`);
-  
+      // Obtener la fecha de hoy en Colombia (UTC-5)
+      const todayInColombia = moment().tz('America/Bogota').format('YYYY-MM-DD');
+      
+      console.log(`Buscando actividades con fecha: ${todayInColombia}`);
+      
       const actividades = await this.actividadeRepository.find({
         relations: ['user.datosGenerales', 'parque', 'tipoActividad'],
         where: {
-          fecha: Raw((alias) => `CAST(${alias} AS TEXT) = :today`, { today }),
+          fecha: Raw((alias) => `CAST(${alias} AS TEXT) = :today`, { today: todayInColombia }),
           // estado: true,
         },
       });
-  
+      
       return actividades;
     } catch (error) {
       console.log(error);

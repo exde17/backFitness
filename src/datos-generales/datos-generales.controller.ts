@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { DatosGeneralesService } from './datos-generales.service';
 import { CreateDatosGeneraleDto } from './dto/create-datos-generale.dto';
 import { UpdateDatosGeneraleDto } from './dto/update-datos-generale.dto';
@@ -12,10 +12,14 @@ export class DatosGeneralesController {
     return this.datosGeneralesService.create(createDatosGeneraleDto);
   }
 
-  @Get()
-  findAll() {
-    return this.datosGeneralesService.findAll();
-  }
+  // @Get()
+  // async findAll() {
+  //   return this.datosGeneralesService.findAll();
+  // }
+@Get()
+findAll(@Query('documentNumber') documentNumber?: string) {
+  return this.datosGeneralesService.findAll(documentNumber);
+}
 
   @Get(':id')
   findOne(@Param('id') id: string) {
