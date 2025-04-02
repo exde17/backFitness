@@ -2,6 +2,7 @@ import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { DocumentType } from "../../user/utils/documentType.enum";
 import { GenderType } from "src/user/utils/genderType.enum";
 import { User } from "src/user/entities/user.entity";
+import { ZonaType } from "src/user/utils/zonaType.enum";
 
 @Entity('datos_generales')
 export class DatosGenerale {
@@ -126,5 +127,11 @@ export class DatosGenerale {
 
         @ManyToOne(() => User, user => user.datosGenerales)
         user: User;
-    
+
+        @Column('enum',{
+            enum: ZonaType,
+            nullable: true,
+        })
+        zona: ZonaType;
+         
 }

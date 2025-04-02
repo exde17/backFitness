@@ -68,6 +68,7 @@ export class UserService {
         grupoSanquineo: createUserDto.grupoSanquineo,
         contactoEmergencia: createUserDto.contactoEmergencia,
         telefonoContacto: createUserDto.telefonoContacto,
+        zona: createUserDto.zona,
       });
 
       // Guardar datos generales en la transacción

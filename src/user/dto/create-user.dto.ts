@@ -12,6 +12,7 @@ import {
 } from 'class-validator';
 import { GenderType } from '../utils/genderType.enum';
 import { DocumentType } from "../../user/utils/documentType.enum";
+import { ZonaType } from '../utils/zonaType.enum';
 
 export class CreateUserDto {
   // @IsString()
@@ -112,4 +113,8 @@ export class CreateUserDto {
     @IsString()
     @IsNotEmpty()
     readonly telefonoContacto: string;
+
+    @IsEnum(ZonaType)
+    @IsNotEmpty()
+    readonly zona: ZonaType;
 }
