@@ -4,6 +4,7 @@ import { UpdateDatosGeneraleDto } from './dto/update-datos-generale.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DatosGenerale } from './entities/datos-generale.entity';
 import { ILike, Repository } from 'typeorm';
+import { User } from 'src/user/entities/user.entity';
 
 @Injectable()
 export class DatosGeneralesService {
@@ -48,12 +49,40 @@ export class DatosGeneralesService {
   }
 
 
-  findOne(id: number) {
-    return `This action returns a #${id} datosGenerale`;
+  async findOne(user: User) {
+    try {
+      return await this.datosGeneraleRepository.findOne({
+        where: {
+          user: {
+            id: user.id,}
+        }
+      });
+      
+    } catch (error) {
+      console.log(error);
+      return 'Error al obtener los datos generales';
+      
+    }
   }
 
-  update(id: number, updateDatosGeneraleDto: UpdateDatosGeneraleDto) {
-    return `This action updates a #${id} datosGenerale`;
+  async update(user:User, updateDatosGeneraleDto: UpdateDatosGeneraleDto) {
+    try {
+      console.log(user);
+      console.log(updateDatosGeneraleDto);
+      await this.datosGeneraleRepository.update({
+        user: {
+          id: user.id,
+        }
+      }, {
+        ...updateDatosGeneraleDto
+      });
+      return 'Datos generales actualizados';
+      
+    } catch (error) {
+      console.log(error);
+      return 'Error al actualizar los datos generales';
+      
+    }
   }
 
   remove(id: number) {

@@ -2,6 +2,8 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestj
 import { DatosGeneralesService } from './datos-generales.service';
 import { CreateDatosGeneraleDto } from './dto/create-datos-generale.dto';
 import { UpdateDatosGeneraleDto } from './dto/update-datos-generale.dto';
+import { Auth, GetUser } from 'src/user/decorator';
+import { User } from 'src/user/entities/user.entity';
 
 @Controller('datos-generales')
 export class DatosGeneralesController {
@@ -17,18 +19,27 @@ export class DatosGeneralesController {
   //   return this.datosGeneralesService.findAll();
   // }
 @Get()
+@Auth()
 findAll(@Query('documentNumber') documentNumber?: string) {
   return this.datosGeneralesService.findAll(documentNumber);
 }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.datosGeneralesService.findOne(+id);
+  @Get('one')
+  @Auth()
+  async findOne(
+    // @Param('id') id: string,
+    @GetUser() user:User
+  ) {
+    return this.datosGeneralesService.findOne(user);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateDatosGeneraleDto: UpdateDatosGeneraleDto) {
-    return this.datosGeneralesService.update(+id, updateDatosGeneraleDto);
+  @Patch()
+  @Auth()
+  async update(
+    // @Param('id') id: string,
+    @GetUser() user:User,
+     @Body() updateDatosGeneraleDto: UpdateDatosGeneraleDto) {
+    return this.datosGeneralesService.update(user, updateDatosGeneraleDto);
   }
 
   @Delete(':id')
