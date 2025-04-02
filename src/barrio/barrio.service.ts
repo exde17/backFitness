@@ -3,7 +3,7 @@ import { CreateBarrioDto } from './dto/create-barrio.dto';
 import { UpdateBarrioDto } from './dto/update-barrio.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Barrio } from './entities/barrio.entity';
-import { Repository } from 'typeorm';
+import { Repository, ILike } from 'typeorm';
 
 @Injectable()
 export class BarrioService {
@@ -73,6 +73,28 @@ export class BarrioService {
     } catch (error) {
       console.log(error);
       return 'Error al actualizar estado';
+    }
+  }
+
+  /**
+   * Filtra barrios por coincidencia en el nombre
+   * @param texto Texto a buscar en el nombre del barrio
+   * @returns Lista de barrios que coinciden con el texto de búsqueda
+   */
+  async findByCoincidence(texto: string) {
+    try {
+      // Usando ILike para búsqueda insensible a mayúsculas/minúsculas (compatible con múltiples bases de datos)
+      const barrios = await this.barrioRepository.find({
+        where: {
+          estado: true,
+          nombre: ILike(`%${texto}%`)
+        }
+      });
+      
+      return barrios;
+    } catch (error) {
+      console.log(error);
+      return 'Error al filtrar barrios por coincidencia';
     }
   }
 }

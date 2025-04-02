@@ -67,8 +67,8 @@ export class DatosGeneralesService {
 
   async update(user:User, updateDatosGeneraleDto: UpdateDatosGeneraleDto) {
     try {
-      console.log(user);
-      console.log(updateDatosGeneraleDto);
+      // console.log(user);
+      // console.log(updateDatosGeneraleDto);
       await this.datosGeneraleRepository.update({
         user: {
           id: user.id,

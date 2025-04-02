@@ -18,6 +18,7 @@ import { BarrioModule } from './barrio/barrio.module';
 import { ParqueModule } from './parque/parque.module';
 import { TipoActividadModule } from './tipo-actividad/tipo-actividad.module';
 import { EventoModule } from './evento/evento.module';
+import { ComunaCorregimientoModule } from './comuna_corregimiento/comuna_corregimiento.module';
 
 @Module({
   imports: [
@@ -67,6 +68,7 @@ import { EventoModule } from './evento/evento.module';
     ParqueModule,
     TipoActividadModule,
     EventoModule,
+    ComunaCorregimientoModule,
   ],
 })
 export class AppModule {}
