@@ -26,6 +26,7 @@ import { EducacionModule } from './educacion/educacion.module';
 import { SituacionModule } from './situacion/situacion.module';
 import { RegimenModule } from './regimen/regimen.module';
 import { EpsModule } from './eps/eps.module';
+import { GeneroModule } from './genero/genero.module';
 
 @Module({
   imports: [
@@ -83,6 +84,7 @@ import { EpsModule } from './eps/eps.module';
     SituacionModule,
     RegimenModule,
     EpsModule,
+    GeneroModule,
   ],
 })
 export class AppModule {}
