@@ -19,6 +19,13 @@ import { ParqueModule } from './parque/parque.module';
 import { TipoActividadModule } from './tipo-actividad/tipo-actividad.module';
 import { EventoModule } from './evento/evento.module';
 import { ComunaCorregimientoModule } from './comuna_corregimiento/comuna_corregimiento.module';
+import { EtniaModule } from './etnia/etnia.module';
+import { DiscapacidadModule } from './discapacidad/discapacidad.module';
+import { VulnerabilidadModule } from './vulnerabilidad/vulnerabilidad.module';
+import { EducacionModule } from './educacion/educacion.module';
+import { SituacionModule } from './situacion/situacion.module';
+import { RegimenModule } from './regimen/regimen.module';
+import { EpsModule } from './eps/eps.module';
 
 @Module({
   imports: [
@@ -69,6 +76,13 @@ import { ComunaCorregimientoModule } from './comuna_corregimiento/comuna_corregi
     TipoActividadModule,
     EventoModule,
     ComunaCorregimientoModule,
+    EtniaModule,
+    DiscapacidadModule,
+    VulnerabilidadModule,
+    EducacionModule,
+    SituacionModule,
+    RegimenModule,
+    EpsModule,
   ],
 })
 export class AppModule {}
