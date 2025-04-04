@@ -13,7 +13,7 @@ export class EtniaController {
   }
 
   @Get()
-  findAll() {
+  async findAll() {
     return this.etniaService.findAll();
   }
 

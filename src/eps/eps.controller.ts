@@ -13,7 +13,7 @@ export class EpsController {
   }
 
   @Get()
-  findAll() {
+  async findAll() {
     return this.epsService.findAll();
   }
 

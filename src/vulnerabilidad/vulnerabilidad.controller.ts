@@ -13,7 +13,7 @@ export class VulnerabilidadController {
   }
 
   @Get()
-  findAll() {
+  async findAll() {
     return this.vulnerabilidadService.findAll();
   }
 

@@ -13,7 +13,7 @@ export class DiscapacidadController {
   }
 
   @Get()
-  findAll() {
+  async findAll() {
     return this.discapacidadService.findAll();
   }
 

@@ -13,7 +13,7 @@ export class EducacionController {
   }
 
   @Get()
-  findAll() {
+  async findAll() {
     return this.educacionService.findAll();
   }
 

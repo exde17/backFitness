@@ -13,7 +13,7 @@ export class SituacionController {
   }
 
   @Get()
-  findAll() {
+  async findAll() {
     return this.situacionService.findAll();
   }
 

@@ -13,7 +13,7 @@ export class RegimenController {
   }
 
   @Get()
-  findAll() {
+  async findAll() {
     return this.regimenService.findAll();
   }
 
