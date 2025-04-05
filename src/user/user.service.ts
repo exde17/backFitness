@@ -94,82 +94,104 @@ export class UserService {
 
   async login(loginUserDto: LoginUserDto) {
     const queryRunner: QueryRunner = this.dataSource.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction(); // 🔥 Inicia la transacción
-  
+    let transactionStarted = false;
+    
     try {
       let caract = true;
       let parq = true;
       let parqAprovado = false;
       const { email, password } = loginUserDto;
-  
-      // 📌 Buscar usuario en la base de datos dentro de la transacción
+      
+      // Conectar primero
+      await queryRunner.connect();
+      
+      // Iniciar la transacción y marcar como iniciada
+      await queryRunner.startTransaction();
+      transactionStarted = true;
+    
+      // Buscar usuario en la base de datos dentro de la transacción
       const user = await queryRunner.manager.findOne(User, {
         relations: ['datosGenerales'],
         where: { email },
         select: ['email', 'password', 'id', 'role', 'datosGenerales'],
       });
-  
+    
       if (!user) {
         throw new UnauthorizedException('Invalid email');
       }
-  
+    
       const isPasswordValid = bcrypt.compareSync(password, user.password);
       if (!isPasswordValid) {
         throw new UnauthorizedException('Invalid password');
       }
-  
-      // 📌 Consultar caracterización dentro de la transacción
+    
+      // Consultar caracterización dentro de la transacción
       const caracterizacion = await queryRunner.manager.findOne(Caracterizacion, {
         where: { 
           user: { id: user.id },
           terminada: true,
          },
       });
-  
+    
       if (!caracterizacion || !caracterizacion.terminada) {
         caract = false;
       }
-  
-      // 📌 Consultar PAR-Q dentro de la transacción
+    
+      // Consultar PAR-Q dentro de la transacción
       const parqUser = await queryRunner.manager.findOne(Parq, {
         where: { user: { id: user.id } },
       });
 
-      // console.log('hola: ',parqUser);
-
       if(parqUser && parqUser.aprobado){
         parqAprovado = true;
       }
-  
+    
       if (!parqUser) {
         parq = false;
       }
-  
-      // 🔥 Confirmar la transacción si todo está correcto
+    
+      // Confirmar la transacción si todo está correcto
       await queryRunner.commitTransaction();
-      await queryRunner.release();
-  
+      
+      // Verificar si datosGenerales existe y tiene elementos antes de acceder a sus propiedades
+      const userName = user.datosGenerales && user.datosGenerales.length > 0 
+        ? (user.datosGenerales[0].name || 'Sin nombre')
+        : 'Sin nombre';
+      
+      const userPhone = user.datosGenerales && user.datosGenerales.length > 0 
+        ? (user.datosGenerales[0].phoneNumber || 'Sin telefono')
+        : 'Sin telefono';
+      
+      const userDocumento = user.datosGenerales && user.datosGenerales.length > 0 
+        ? user.datosGenerales[0].documentNumber 
+        : '';
+    
       return {
-        // ...user,
         id: user.id,
         email: user.email,
-        name: user.datosGenerales[0].name,
-        documento: user.datosGenerales[0].documentNumber,
+        name: userName,
+        phoneNumber: userPhone,
+        documento: userDocumento,
         token: this.getJwtToken({ id: user.id }),
         caracterizacion: caract,
         role: user.role,
         parq: parq,
         parqAprovado: parqAprovado,
-        
         password: undefined,
       };
-  
+    
     } catch (error) {
-      await queryRunner.rollbackTransaction(); // 🔥 Revertir cambios si hay error
-      await queryRunner.release();
-  
+      // Solo hacer rollback si la transacción se inició
+      if (transactionStarted) {
+        await queryRunner.rollbackTransaction();
+      }
+      
       throw error;
+    } finally {
+      // Siempre liberar el queryRunner
+      if (queryRunner && !queryRunner.isReleased) {
+        await queryRunner.release();
+      }
     }
   }
   // async login(loginUserDto: LoginUserDto) {
