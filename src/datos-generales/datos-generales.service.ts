@@ -12,8 +12,20 @@ export class DatosGeneralesService {
     @InjectRepository(DatosGenerale)
     private readonly datosGeneraleRepository: Repository<DatosGenerale>,
   ) {}
-  create(createDatosGeneraleDto: CreateDatosGeneraleDto) {
-    return 'This action adds a new datosGenerale';
+  async create(createDatosGeneraleDto: CreateDatosGeneraleDto) {
+    try {
+      // console.log(createDatosGeneraleDto);
+      const datosGenerale = this.datosGeneraleRepository.create({
+        ...createDatosGeneraleDto,
+      });
+      await this.datosGeneraleRepository.save(datosGenerale);
+      return 'Datos generales creados';
+      
+    } catch (error) {
+      console.log(error);
+      return 'Error al crear los datos generales';
+      
+    }
   }
 
   // async findAll() {
