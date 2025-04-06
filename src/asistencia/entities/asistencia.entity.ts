@@ -26,7 +26,7 @@ export class Asistencia {
 
     @Column('bool',{
         nullable: false,
-        default: true,
+        default: false,
     })
     calificado: boolean;
 }
