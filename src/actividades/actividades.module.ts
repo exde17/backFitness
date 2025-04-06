@@ -6,11 +6,12 @@ import { Actividade } from './entities/actividade.entity';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
+import { Calificacion } from 'src/calificacion/entities/calificacion.entity';
 
 @Module({
   controllers: [ActividadesController],
   providers: [ActividadesService],
-  imports: [ConfigModule, TypeOrmModule.forFeature([Actividade]),
+  imports: [ConfigModule, TypeOrmModule.forFeature([Actividade, Calificacion]),
   PassportModule.register({ defaultStrategy: 'jwt' }),
       JwtModule.registerAsync({
         imports:[ConfigModule],

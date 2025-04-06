@@ -17,6 +17,7 @@ import { Respuesta } from 'src/respuesta/entities/respuesta.entity';
 import { Parq } from 'src/parq/entities/parq.entity';
 import { Actividade } from 'src/actividades/entities/actividade.entity';
 import { Asistencia } from 'src/asistencia/entities/asistencia.entity';
+import { Calificacion } from 'src/calificacion/entities/calificacion.entity';
 
 
 @Entity({
@@ -90,6 +91,9 @@ export class User {
 
   // @OneToMany(()=> Asistencia, asistencia => asistencia.user)
   // asistencias: Asistencia[];
+
+  @OneToMany(()=> Calificacion , calificacion => calificacion.usuario)
+  calificaciones: Calificacion[];
 
   @BeforeInsert()
   emailToLowerCase() {

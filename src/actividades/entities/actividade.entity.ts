@@ -1,4 +1,5 @@
 import { Asistencia } from "src/asistencia/entities/asistencia.entity";
+import { Calificacion } from "src/calificacion/entities/calificacion.entity";
 import { Parque } from "src/parque/entities/parque.entity";
 import { TipoActividad } from "src/tipo-actividad/entities/tipo-actividad.entity";
 import { User } from "src/user/entities/user.entity";
@@ -52,6 +53,9 @@ export class Actividade {
 
     @OneToMany(()=> Asistencia, asistencia => asistencia.actividad)
     asistencias: Asistencia[];
+
+    @OneToMany(()=> Calificacion , calificacion => calificacion.actividad)
+    calificaciones: Calificacion[];
 
     @Column('bool',{
         nullable: false,

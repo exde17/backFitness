@@ -23,4 +23,10 @@ export class Asistencia {
         nullable: true,
     })
     fecha: Date;
+
+    @Column('bool',{
+        nullable: false,
+        default: true,
+    })
+    calificado: boolean;
 }
