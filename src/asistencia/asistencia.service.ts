@@ -4,6 +4,7 @@ import { UpdateAsistenciaDto } from './dto/update-asistencia.dto';
 import { Repository } from 'typeorm';
 import { Asistencia } from './entities/asistencia.entity';
 import { InjectRepository } from '@nestjs/typeorm';
+import { User } from 'src/user/entities/user.entity';
 
 @Injectable()
 export class AsistenciaService {
@@ -37,6 +38,23 @@ export class AsistenciaService {
     } catch (error) {
       console.log(error);
       return 'Error al crear la asistencia';
+      
+    }
+  }
+
+  async findAllNoCalificadas(user: User) {
+    try {
+      const asistencias = await this.asistenciaRepository.find({
+        relations: ['actividad', 'usuario'],
+        where: {
+          documento: user.datosGenerales[0].documentNumber,
+          calificado: false,
+        },
+      });
+      return asistencias;
+    } catch (error) {
+      console.log(error);
+      return 'Error al obtener las asistencias';
       
     }
   }

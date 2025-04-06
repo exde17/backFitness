@@ -2,6 +2,8 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { AsistenciaService } from './asistencia.service';
 import { CreateAsistenciaDto } from './dto/create-asistencia.dto';
 import { UpdateAsistenciaDto } from './dto/update-asistencia.dto';
+import { Auth, GetUser } from 'src/user/decorator';
+import { User } from 'src/user/entities/user.entity';
 
 @Controller('asistencia')
 export class AsistenciaController {
@@ -12,6 +14,15 @@ export class AsistenciaController {
   @Post()
   async create(@Body() createAsistenciaDto: CreateAsistenciaDto) {
     return this.asistenciaService.create(createAsistenciaDto);
+  }
+
+  // asistencia no calificacdas
+  @Get('no-calificadas')
+  @Auth()
+  async findAllNoCalificadas(
+    @GetUser() user: User,
+  ) {
+    return this.asistenciaService.findAllNoCalificadas(user);
   }
 
   @Get()
