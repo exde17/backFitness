@@ -66,9 +66,14 @@ export class AsistenciaService {
           calificado: false,
         },
       });
+
+      // buscar nombre tipo actividad
+      const actividades = asistencias.map((asistencia) => {
+        return asistencia.actividad.tipoActividad.nombre;
+      });
       return {
         // user: userDatos.user,
-        nombreActividad: asistencias[0].actividad.tipoActividad.nombre,
+        nombreActividad: actividades,
         asistencias
       };
     } catch (error) {
