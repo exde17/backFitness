@@ -6,6 +6,7 @@ import { Repository } from 'typeorm';
 import { Calificacion } from './entities/calificacion.entity';
 import { User } from 'src/user/entities/user.entity';
 import { Asistencia } from 'src/asistencia/entities/asistencia.entity';
+import { DatosGenerale } from 'src/datos-generales/entities/datos-generale.entity';
 
 @Injectable()
 export class CalificacionService {
@@ -14,14 +15,26 @@ export class CalificacionService {
     private readonly calificacionRepository: Repository<Calificacion>,
     @InjectRepository(Asistencia)
     private readonly asistenciaRepository: Repository<Asistencia>,
+    @InjectRepository(DatosGenerale)
+    private readonly datosGeneraleRepository: Repository<DatosGenerale>,
+    
   ) {}
   async create(user: User, createCalificacionDto: CreateCalificacionDto) {
     try {
+      // busco el documento del usuario
+      const userDatos = await this.datosGeneraleRepository.findOne({
+        where: {
+          user: { id: user.id },
+        },
+      });
+      if (!userDatos) {
+        return 'No se encontro el documento del usuario';
+      }
 
       // Actualizo la asistencia
       const asistencia = await this.asistenciaRepository.findOne({
         where: {
-          documento: user.datosGenerales[0].documentNumber,
+          documento: userDatos.documentNumber,
           actividad: { id: createCalificacionDto.actividad.id },
         },
       });
