@@ -5,12 +5,15 @@ import { Repository } from 'typeorm';
 import { Asistencia } from './entities/asistencia.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/user/entities/user.entity';
+import { DatosGenerale } from 'src/datos-generales/entities/datos-generale.entity';
 
 @Injectable()
 export class AsistenciaService {
   constructor(
     @InjectRepository(Asistencia)
     private readonly asistenciaRepository: Repository<Asistencia>,
+    @InjectRepository(DatosGenerale)
+    private readonly datosGeneraleRepository: Repository<DatosGenerale>,
   ){}
 
   async create(createAsistenciaDto: CreateAsistenciaDto) {
@@ -44,10 +47,22 @@ export class AsistenciaService {
 
   async findAllNoCalificadas(user: User) {
     try {
+
+      // busco el documento del usuario
+      const userDatos = await this.datosGeneraleRepository.findOne({
+        where: {
+          user: { id: user.id },
+        },
+        relations: ['user'],
+      });
+      if (!userDatos) {
+        return 'No se encontro el documento del usuario';
+      }
+      
       const asistencias = await this.asistenciaRepository.find({
         relations: ['actividad', 'usuario'],
         where: {
-          documento: user.datosGenerales[0].documentNumber,
+          documento: userDatos.documentNumber,
           calificado: false,
         },
       });
