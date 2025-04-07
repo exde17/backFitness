@@ -79,7 +79,7 @@ export class ActividadesService {
           user: {
             id: user.id
           },
-          estado: true
+          // estado: true
         },
       });
       return actividades;
