@@ -23,15 +23,32 @@ export class AsistenciaService {
   ){}
 
   async verificarAsistenciaExistente(createAsistenciaDto: CreateAsistenciaDto): Promise<boolean> {
-    // Usando QueryBuilder para mayor claridad y control
-    const asistenciaExistente = await this.asistenciaRepository
-      .createQueryBuilder('asistencia')
-      .innerJoin('asistencia.actividad', 'actividad')
-      .where('asistencia.documento = :documento', { documento: createAsistenciaDto.documento })
-      .andWhere('actividad.id = :actividadId', { actividadId: createAsistenciaDto.actividad.id })
-      .getOne();
+    try {
+      console.log('Verificando asistencia existente con:', {
+        documento: createAsistenciaDto.documento,
+        actividadId: createAsistenciaDto.actividad.id
+      });
 
-    return !!asistenciaExistente;
+      // Asegurarse de que la actividad.id sea un string válido
+      const actividadId = typeof createAsistenciaDto.actividad === 'string' 
+        ? createAsistenciaDto.actividad 
+        : createAsistenciaDto.actividad.id;
+
+      // Usando QueryBuilder para mayor claridad y control
+      const asistenciaExistente = await this.asistenciaRepository
+        .createQueryBuilder('asistencia')
+        .innerJoinAndSelect('asistencia.actividad', 'actividad')
+        .where('asistencia.documento = :documento', { documento: createAsistenciaDto.documento })
+        .andWhere('actividad.id = :actividadId', { actividadId })
+        .getOne();
+
+      console.log('Resultado de la búsqueda:', asistenciaExistente);
+      
+      return !!asistenciaExistente;
+    } catch (error) {
+      console.error('Error al verificar asistencia existente:', error);
+      return false;
+    }
   }
 
   async create(createAsistenciaDto: CreateAsistenciaDto) {
@@ -42,6 +59,8 @@ export class AsistenciaService {
       if(existeAsistencia){
         return 'Ya existe una asistencia para esta actividad';
       }
+
+      // Si no existe, crear la nueva asistencia
       const asistencia = this.asistenciaRepository.create({
         ...createAsistenciaDto,
         fecha: new Date(),
@@ -52,7 +71,6 @@ export class AsistenciaService {
     } catch (error) {
       console.log(error);
       return 'Error al crear la asistencia';
-      
     }
   }
 
