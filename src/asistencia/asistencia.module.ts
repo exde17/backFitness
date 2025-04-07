@@ -8,11 +8,12 @@ import { JwtModule } from '@nestjs/jwt';
 import { Asistencia } from './entities/asistencia.entity';
 import { DatosGenerale } from 'src/datos-generales/entities/datos-generale.entity';
 import { Actividade } from 'src/actividades/entities/actividade.entity';
+import { Parque } from 'src/parque/entities/parque.entity';
 
 @Module({
   controllers: [AsistenciaController],
   providers: [AsistenciaService],
-  imports: [ConfigModule, TypeOrmModule.forFeature([Asistencia, DatosGenerale, Actividade]),
+  imports: [ConfigModule, TypeOrmModule.forFeature([Asistencia, DatosGenerale, Actividade, Parque]),
     PassportModule.register({ defaultStrategy: 'jwt' }),
         JwtModule.registerAsync({
           imports:[ConfigModule],
