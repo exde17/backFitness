@@ -6,11 +6,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { Asistencia } from './entities/asistencia.entity';
+import { DatosGenerale } from 'src/datos-generales/entities/datos-generale.entity';
 
 @Module({
   controllers: [AsistenciaController],
   providers: [AsistenciaService],
-  imports: [ConfigModule, TypeOrmModule.forFeature([Asistencia]),
+  imports: [ConfigModule, TypeOrmModule.forFeature([Asistencia, DatosGenerale]),
     PassportModule.register({ defaultStrategy: 'jwt' }),
         JwtModule.registerAsync({
           imports:[ConfigModule],
