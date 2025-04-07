@@ -72,12 +72,13 @@ export class AsistenciaService {
 
       // buscar nombre tipo actividad
       const actividades = await this.actividadeRepository.find({
+        relations: ['tipoActividad'],
         where: {
           id: In(asistencias.map((asistencia) => asistencia.actividad.id)),
         },
       });
       // const actividades = asistencias.map((asistencia) => asistencia.actividad);
-      
+      console.log(actividades);
       return {
         asistencias: asistencias.map((asistencia) => {
           const actividad = actividades.find(
