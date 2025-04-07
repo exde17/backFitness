@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { CreateAsistenciaDto } from './dto/create-asistencia.dto';
 import { UpdateAsistenciaDto } from './dto/update-asistencia.dto';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { Asistencia } from './entities/asistencia.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/user/entities/user.entity';
 import { DatosGenerale } from 'src/datos-generales/entities/datos-generale.entity';
+import { Actividade } from 'src/actividades/entities/actividade.entity';
 
 @Injectable()
 export class AsistenciaService {
@@ -14,6 +15,8 @@ export class AsistenciaService {
     private readonly asistenciaRepository: Repository<Asistencia>,
     @InjectRepository(DatosGenerale)
     private readonly datosGeneraleRepository: Repository<DatosGenerale>,
+    @InjectRepository(Actividade) 
+    private readonly actividadeRepository: Repository<Actividade>,
   ){}
 
   async create(createAsistenciaDto: CreateAsistenciaDto) {
@@ -68,13 +71,36 @@ export class AsistenciaService {
       });
 
       // buscar nombre tipo actividad
-      const actividades = asistencias.map((asistencia) => {
-        return asistencia.actividad.tipoActividad.nombre;
+      const actividades = await this.actividadeRepository.find({
+        where: {
+          id: In(asistencias.map((asistencia) => asistencia.actividad.id)),
+        },
       });
+      // const actividades = asistencias.map((asistencia) => asistencia.actividad);
+      
       return {
-        // user: userDatos.user,
-        nombreActividad: actividades,
-        asistencias
+        asistencias: asistencias.map((asistencia) => {
+          const actividad = actividades.find(
+            (actividad) => actividad.id === asistencia.actividad.id,
+          );
+          return {
+            ...asistencia,
+            actividad: {
+              ...actividad,
+              tipoActividad: {
+                nombre: actividad.tipoActividad.nombre,
+              },
+            },
+          };
+        }),
+        actividades: actividades.map((actividad) => {
+          return {
+            ...actividad,
+            tipoActividad: {
+              nombre: actividad.tipoActividad.nombre,
+            },
+          };
+        }),
       };
     } catch (error) {
       console.log(error);
