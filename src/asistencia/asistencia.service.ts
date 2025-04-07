@@ -22,19 +22,24 @@ export class AsistenciaService {
     private readonly parqueRepository: Repository<Parque>,  
   ){}
 
+  async verificarAsistenciaExistente(createAsistenciaDto: CreateAsistenciaDto): Promise<boolean> {
+    // Usando QueryBuilder para mayor claridad y control
+    const asistenciaExistente = await this.asistenciaRepository
+      .createQueryBuilder('asistencia')
+      .innerJoin('asistencia.actividad', 'actividad')
+      .where('asistencia.documento = :documento', { documento: createAsistenciaDto.documento })
+      .andWhere('actividad.id = :actividadId', { actividadId: createAsistenciaDto.actividad.id })
+      .getOne();
+
+    return !!asistenciaExistente;
+  }
+
   async create(createAsistenciaDto: CreateAsistenciaDto) {
     try {
-      // verifico si existe alguna asistencia con el mismo usuario y la misma actividad
-      const asistenciaExistente = await this.asistenciaRepository.findOne({
-        relations: [ 'actividad'],
-        where: {
-          // user: {id:createAsistenciaDto.user.id},
-          documento: createAsistenciaDto.documento,
-          actividad: {id: createAsistenciaDto.actividad.id},
-        }
-      });
-
-      if(asistenciaExistente){
+      // Verificar si ya existe una asistencia para este documento y esta actividad
+      const existeAsistencia = await this.verificarAsistenciaExistente(createAsistenciaDto);
+      
+      if(existeAsistencia){
         return 'Ya existe una asistencia para esta actividad';
       }
       const asistencia = this.asistenciaRepository.create({
