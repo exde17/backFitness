@@ -60,7 +60,7 @@ export class AsistenciaService {
       }
       
       const asistencias = await this.asistenciaRepository.find({
-        relations: ['actividad', 'usuario'],
+        relations: ['actividad'],
         where: {
           documento: userDatos.documentNumber,
           calificado: false,
