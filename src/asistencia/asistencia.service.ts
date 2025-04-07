@@ -51,6 +51,71 @@ export class AsistenciaService {
     }
   }
 
+  // async findAllNoCalificadas(user: User) {
+  //   try {
+  //     // busco el documento del usuario
+  //     const userDatos = await this.datosGeneraleRepository.findOne({
+  //       where: {
+  //         user: { id: user.id },
+  //       },
+  //       relations: ['user'],
+  //     });
+  //     if (!userDatos) {
+  //       return 'No se encontro el documento del usuario';
+  //     }
+      
+  //     const asistencias = await this.asistenciaRepository.find({
+  //       relations: ['actividad'],
+  //       where: {
+  //         documento: userDatos.documentNumber,
+  //         calificado: false,
+  //       },
+  //     });
+  
+  //     // buscar nombre tipo actividad y parque
+  //     const actividades = await this.actividadeRepository.find({
+  //       relations: ['tipoActividad', 'parque'], // Incluye la relación con parque
+  //       where: {
+  //         id: In(asistencias.map((asistencia) => asistencia.actividad.id)),
+  //       },
+  //     });
+  
+  //     return {
+  //       asistencias: asistencias.map((asistencia) => {
+  //         const actividad = actividades.find(
+  //           (actividad) => actividad.id === asistencia.actividad.id,
+  //         );
+  //         return {
+  //           ...asistencia,
+  //           actividad: {
+  //             ...actividad,
+  //             tipoActividad: {
+  //               nombre: actividad.tipoActividad.nombre,
+  //             },
+  //             parque: {
+  //               nombre: actividad.parque.nombre, // Incluye el nombre del parque
+  //             },
+  //           },
+  //         };
+  //       }),
+  //       actividades: actividades.map((actividad) => {
+  //         return {
+  //           ...actividad,
+  //           tipoActividad: {
+  //             nombre: actividad.tipoActividad.nombre,
+  //           },
+  //           parque: {
+  //             nombre: actividad.parque.nombre, // Incluye el nombre del parque
+  //           },
+  //         };
+  //       }),
+  //     };
+  //   } catch (error) {
+  //     console.log(error);
+  //     return 'Error al obtener las asistencias';
+  //   }
+  // }
+
   async findAllNoCalificadas(user: User) {
     try {
       // busco el documento del usuario
@@ -72,9 +137,9 @@ export class AsistenciaService {
         },
       });
   
-      // buscar nombre tipo actividad y parque
+      // buscar nombre tipo actividad, parque y monitor
       const actividades = await this.actividadeRepository.find({
-        relations: ['tipoActividad', 'parque'], // Incluye la relación con parque
+        relations: ['tipoActividad', 'parque', 'user'], // Incluye la relación con user
         where: {
           id: In(asistencias.map((asistencia) => asistencia.actividad.id)),
         },
@@ -95,6 +160,9 @@ export class AsistenciaService {
               parque: {
                 nombre: actividad.parque.nombre, // Incluye el nombre del parque
               },
+              monitor: {
+                nombre: actividad.user.email, // Incluye el nombre del monitor (puedes cambiar a otra propiedad si es necesario)
+              },
             },
           };
         }),
@@ -107,6 +175,9 @@ export class AsistenciaService {
             parque: {
               nombre: actividad.parque.nombre, // Incluye el nombre del parque
             },
+            monitor: {
+              nombre: actividad.user.datosGenerales[0].name, // Incluye el nombre del monitor (puedes cambiar a otra propiedad si es necesario)
+            },
           };
         }),
       };
@@ -115,68 +186,6 @@ export class AsistenciaService {
       return 'Error al obtener las asistencias';
     }
   }
-
-  // async findAllNoCalificadas(user: User) {
-  //   try {
-
-  //     // busco el documento del usuario
-  //     const userDatos = await this.datosGeneraleRepository.findOne({
-  //       where: {
-  //         user: { id: user.id },
-  //       },
-  //       relations: ['user'],
-  //     });
-  //     if (!userDatos) {
-  //       return 'No se encontro el documento del usuario';
-  //     }
-      
-  //     const asistencias = await this.asistenciaRepository.find({
-  //       relations: ['actividad'],
-  //       where: {
-  //         documento: userDatos.documentNumber,
-  //         calificado: false,
-  //       },
-  //     });
-
-  //     // buscar nombre tipo actividad
-  //     const actividades = await this.actividadeRepository.find({
-  //       relations: ['tipoActividad'],
-  //       where: {
-  //         id: In(asistencias.map((asistencia) => asistencia.actividad.id)),
-  //       },
-  //     });
-  //     // const actividades = asistencias.map((asistencia) => asistencia.actividad);
-  //     // console.log(actividades);
-  //     return {
-  //       asistencias: asistencias.map((asistencia) => {
-  //         const actividad = actividades.find(
-  //           (actividad) => actividad.id === asistencia.actividad.id,
-  //         );
-  //         return {
-  //           ...asistencia,
-  //           actividad: {
-  //             ...actividad,
-  //             tipoActividad: {
-  //               nombre: actividad.tipoActividad.nombre,
-  //             },
-  //           },
-  //         };
-  //       }),
-  //       actividades: actividades.map((actividad) => {
-  //         return {
-  //           ...actividad,
-  //           tipoActividad: {
-  //             nombre: actividad.tipoActividad.nombre,
-  //           },
-  //         };
-  //       }),
-  //     };
-  //   } catch (error) {
-  //     console.log(error);
-  //     return 'Error al obtener las asistencias';
-      
-  //   }
-  // }
 
   findAll() {
     return `This action returns all asistencia`;
