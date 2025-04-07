@@ -66,7 +66,11 @@ export class AsistenciaService {
           calificado: false,
         },
       });
-      return asistencias;
+      return {
+        // user: userDatos.user,
+        nombreActividad: asistencias[0].actividad.tipoActividad.nombre,
+        asistencias
+      };
     } catch (error) {
       console.log(error);
       return 'Error al obtener las asistencias';
