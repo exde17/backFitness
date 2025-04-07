@@ -64,6 +64,30 @@ export class ActividadesService {
     }
   }
 
+  // actividades por semana por monitor 
+  async findMonitor(user: User) {
+    try {
+      // Obtener la fecha de hoy en Colombia (UTC-5)
+      const todayInColombia = moment().tz('America/Bogota').format('YYYY-MM-DD');
+      const startOfWeek = new Date(moment(todayInColombia).startOf('week').format('YYYY-MM-DD'));
+      const endOfWeek = new Date(moment(todayInColombia).endOf('week').format('YYYY-MM-DD'));
+      console.log(`Buscando actividades entre: ${startOfWeek} y ${endOfWeek}`);
+      const actividades = await this.actividadeRepository.find({
+        relations: ['user.datosGenerales', 'parque', 'tipoActividad'],
+        where: {
+          fecha: Between(startOfWeek, endOfWeek),
+          user: {
+            id: user.id
+          },
+          estado: true
+        },
+      });
+      return actividades;
+    } catch (error) {
+      console.log(error);
+      return 'Error al obtener las actividades';
+    }
+  }
 
   async findAll() {
     try {

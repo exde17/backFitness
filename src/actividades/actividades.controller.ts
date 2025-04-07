@@ -33,6 +33,15 @@ export class ActividadesController {
     return this.actividadesService.findDia();
   }
 
+  // actividades por monitor 
+  @Get('monitor')
+  @Auth()
+  async findMonitor(
+    @GetUser() user: any,
+  ) {
+    return this.actividadesService.findMonitor(user);
+  }
+
   @Get()
   @Auth()
   findAll() {
