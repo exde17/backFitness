@@ -145,10 +145,28 @@ export class AsistenciaService {
         },
       });
   
+      // Obtener los nombres de los monitores
+      const monitores = await Promise.all(
+        actividades.map(async (actividad) => {
+          const monitorDatos = await this.datosGeneraleRepository.findOne({
+            where: {
+              user: { id: actividad.user.id },
+            },
+          });
+          return {
+            actividadId: actividad.id,
+            nombre: monitorDatos ? monitorDatos.name : 'Nombre no disponible',
+          };
+        })
+      );
+  
       return {
         asistencias: asistencias.map((asistencia) => {
           const actividad = actividades.find(
             (actividad) => actividad.id === asistencia.actividad.id,
+          );
+          const monitor = monitores.find(
+            (monitor) => monitor.actividadId === actividad.id,
           );
           return {
             ...asistencia,
@@ -161,12 +179,15 @@ export class AsistenciaService {
                 nombre: actividad.parque.nombre, // Incluye el nombre del parque
               },
               monitor: {
-                nombre: actividad.user.email, // Incluye el nombre del monitor (puedes cambiar a otra propiedad si es necesario)
+                nombre: monitor.nombre, // Incluye el nombre del monitor
               },
             },
           };
         }),
         actividades: actividades.map((actividad) => {
+          const monitor = monitores.find(
+            (monitor) => monitor.actividadId === actividad.id,
+          );
           return {
             ...actividad,
             tipoActividad: {
@@ -176,7 +197,7 @@ export class AsistenciaService {
               nombre: actividad.parque.nombre, // Incluye el nombre del parque
             },
             monitor: {
-              nombre: actividad.user.datosGenerales[0].name, // Incluye el nombre del monitor (puedes cambiar a otra propiedad si es necesario)
+              nombre: monitor.nombre, // Incluye el nombre del monitor
             },
           };
         }),
