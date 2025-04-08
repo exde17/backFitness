@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateCalificacionDto } from './dto/create-calificacion.dto';
 import { UpdateCalificacionDto } from './dto/update-calificacion.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { And, Repository } from 'typeorm';
+import { Repository, DataSource } from 'typeorm';
 import { Calificacion } from './entities/calificacion.entity';
 import { User } from 'src/user/entities/user.entity';
 import { Asistencia } from 'src/asistencia/entities/asistencia.entity';
@@ -17,49 +17,66 @@ export class CalificacionService {
     private readonly asistenciaRepository: Repository<Asistencia>,
     @InjectRepository(DatosGenerale)
     private readonly datosGeneraleRepository: Repository<DatosGenerale>,
-
+    private readonly dataSource: DataSource,
   ) { }
   async create(user: User, createCalificacionDto: CreateCalificacionDto) {
+    // Iniciamos una transacción para garantizar atomicidad
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
     try {
-      // busco el documento del usuario
+      // 1. Buscar el documento del usuario
       const userDatos = await this.datosGeneraleRepository.findOne({
         where: {
           user: { id: user.id },
         },
       });
+      
       if (!userDatos) {
-        return 'No se encontro el documento del usuario';
+        return 'No se encontró el documento del usuario';
       }
 
-      // Actualizo la asistencia
-        const asistencia = await this.asistenciaRepository.findOne({
-          where: {
-            documento: userDatos.documentNumber,
-            actividad: { id: createCalificacionDto.actividad.id },
-          },
-        });
-        if (asistencia) {
-          asistencia.calificado = true;
-          await this.asistenciaRepository.save(asistencia);
+      // 2. Buscar la asistencia
+      const asistencia = await this.asistenciaRepository.findOne({
+        where: {
+          documento: userDatos.documentNumber,
+          actividad: { id: createCalificacionDto.actividad.id },
+        },
+      });
 
-          const calificacion = this.calificacionRepository.create({
-            ...createCalificacionDto,
-            usuario: {id:user.id},
-          });
-          await this.calificacionRepository.save(calificacion);
-
-          return 'Calificacion creada con exito';
-        } else {
-          return 'No se encontro la asistencia';
-        }
-
-
-      } catch (error) {
-        console.log(error);
-        return 'Error al crear la calificacion';
-
+      if (!asistencia) {
+        return 'No se encontró la asistencia';
       }
-    
+
+      // 3. Actualizar explícitamente el estado de la asistencia
+      await this.asistenciaRepository.update(
+        { id: asistencia.id },
+        { calificado: true }
+      );
+      
+      // 4. Crear la calificación
+      const calificacion = this.calificacionRepository.create({
+        ...createCalificacionDto,
+        usuario: { id: user.id },
+      });
+      
+      await this.calificacionRepository.save(calificacion);
+      
+      // Confirmar la transacción
+      await queryRunner.commitTransaction();
+      
+      return 'Calificación creada con éxito';
+    } catch (error) {
+      // Revertir cambios en caso de error
+      await queryRunner.rollbackTransaction();
+      
+      console.log('Error en create calificación:', error);
+      return 'Error al crear la calificación: ' + error.message;
+    } finally {
+      // Liberar el queryRunner
+      await queryRunner.release();
+    }
   }
 
   async findAll(user) {
@@ -69,11 +86,9 @@ export class CalificacionService {
         relations: ['usuario', 'actividad'],
       });
       return calificaciones;
-
     } catch (error) {
       console.log(error);
       return 'Error al obtener las calificaciones';
-
     }
   }
 
