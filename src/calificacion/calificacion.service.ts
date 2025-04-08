@@ -17,8 +17,8 @@ export class CalificacionService {
     private readonly asistenciaRepository: Repository<Asistencia>,
     @InjectRepository(DatosGenerale)
     private readonly datosGeneraleRepository: Repository<DatosGenerale>,
-    
-  ) {}
+
+  ) { }
   async create(user: User, createCalificacionDto: CreateCalificacionDto) {
     try {
       // busco el documento del usuario
@@ -32,32 +32,61 @@ export class CalificacionService {
       }
 
       // Actualizo la asistencia
-      const asistencia = await this.asistenciaRepository.findOne({
-        where: {
-          documento: userDatos.documentNumber,
-          actividad: { id: createCalificacionDto.actividad.id },
-        },
-      });
-      if (asistencia) {
+      //   const asistencia = await this.asistenciaRepository.findOne({
+      //     where: {
+      //       documento: userDatos.documentNumber,
+      //       actividad: { id: createCalificacionDto.actividad.id },
+      //     },
+      //   });
+      //   if (asistencia) {
+      //     asistencia.calificado = true;
+      //     await this.asistenciaRepository.save(asistencia);
+
+      //     const calificacion = this.calificacionRepository.create({
+      //       ...createCalificacionDto,
+      //       usuario: {id:user.id},
+      //     });
+      //     await this.calificacionRepository.save(calificacion);
+
+      //     return 'Calificacion creada con exito';
+      //   } else {
+      //     return 'No se encontro la asistencia';
+      //   }
+
+
+      // } catch (error) {
+      //   console.log(error);
+      //   return 'Error al crear la calificacion';
+
+      // }
+      const asistencias = await this.asistenciaRepository
+        .createQueryBuilder('asistencia')
+        .innerJoinAndSelect('asistencia.actividad', 'actividad')
+        .where('asistencia.documento = :documento', { documento: userDatos.documentNumber })
+        .andWhere('actividad.id = :actividadId', { actividadId: createCalificacionDto.actividad.id })
+        .getMany();
+
+      if (asistencias && asistencias.length > 0) {
+        const asistencia = asistencias[0];
         asistencia.calificado = true;
         await this.asistenciaRepository.save(asistencia);
 
         const calificacion = this.calificacionRepository.create({
           ...createCalificacionDto,
-          usuario: {id:user.id},
+          usuario: { id: user.id },
         });
         await this.calificacionRepository.save(calificacion);
-  
+
         return 'Calificacion creada con exito';
       } else {
         return 'No se encontro la asistencia';
       }
 
-      
+
     } catch (error) {
       console.log(error);
       return 'Error al crear la calificacion';
-      
+
     }
   }
 
@@ -68,11 +97,11 @@ export class CalificacionService {
         relations: ['usuario', 'actividad'],
       });
       return calificaciones;
-      
+
     } catch (error) {
       console.log(error);
       return 'Error al obtener las calificaciones';
-      
+
     }
   }
 
