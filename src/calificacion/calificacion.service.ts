@@ -134,7 +134,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateCalificacionDto } from './dto/create-calificacion.dto';
 import { UpdateCalificacionDto } from './dto/update-calificacion.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { And, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Calificacion } from './entities/calificacion.entity';
 import { User } from 'src/user/entities/user.entity';
 import { Asistencia } from 'src/asistencia/entities/asistencia.entity';
@@ -153,47 +153,73 @@ export class CalificacionService {
   ) { }
   async create(user: User, createCalificacionDto: CreateCalificacionDto) {
     try {
-      // busco el documento del usuario
+      // Busco el documento del usuario
       const userDatos = await this.datosGeneraleRepository.findOne({
         where: {
           user: { id: user.id },
         },
       });
+      
       if (!userDatos) {
-        return 'No se encontro el documento del usuario';
+        return 'No se encontró el documento del usuario';
       }
 
-      console.log('la actividad: ',createCalificacionDto.actividad)
-
-      // Actualizo la asistencia
-        const asistencia = await this.asistenciaRepository.findOne({
-          relations: ['actividad'],
-          where: {
-            documento: userDatos.documentNumber,
-            actividad:  createCalificacionDto.actividad ,
-          },
-        });
-        if (asistencia) {
-          asistencia.calificado = true;
-          await this.asistenciaRepository.save(asistencia);
-
-          const calificacion = this.calificacionRepository.create({
-            ...createCalificacionDto,
-            usuario: {id:user.id},
-          });
-          await this.calificacionRepository.save(calificacion);
-
-          return 'Calificacion creada con exito';
-        } else {
-          return 'No se encontro la asistencia';
-        }
-
-      } catch (error) {
-        console.log(error);
-        return 'Error al crear la calificacion';
-
+      console.log('Documento del usuario:', userDatos.documentNumber);
+      
+      // Verificar el formato de la actividad
+      let actividadId;
+      
+      // Si la actividad es un string (ID directo), lo usamos directamente
+      if (typeof createCalificacionDto.actividad === 'string') {
+        actividadId = createCalificacionDto.actividad;
+        console.log('Actividad es un string ID:', actividadId);
+      } 
+      // Si la actividad es un objeto con propiedad id, usamos esa propiedad
+      else if (createCalificacionDto.actividad && createCalificacionDto.actividad.id) {
+        actividadId = createCalificacionDto.actividad.id;
+        console.log('Actividad es un objeto con ID:', actividadId);
       }
-    
+      // Si no podemos determinar el ID, retornamos error
+      else {
+        console.log('Formato de actividad no reconocido:', createCalificacionDto.actividad);
+        return 'Formato de actividad no válido';
+      }
+
+      // Buscar la asistencia usando QueryBuilder para tener más control
+      const asistencia = await this.asistenciaRepository
+        .createQueryBuilder('asistencia')
+        .innerJoinAndSelect('asistencia.actividad', 'actividad')
+        .where('asistencia.documento = :documento', { documento: userDatos.documentNumber })
+        .andWhere('actividad.id = :actividadId', { actividadId })
+        .getOne();
+
+      if (!asistencia) {
+        console.log('No se encontró asistencia para documento:', userDatos.documentNumber, 'y actividad:', actividadId);
+        return 'No se encontró la asistencia';
+      }
+
+      console.log('Asistencia encontrada:', asistencia.id);
+
+      // Actualizar la asistencia
+      asistencia.calificado = true;
+      await this.asistenciaRepository.save(asistencia);
+      console.log('Asistencia actualizada con calificado = true');
+
+      // Crear la calificación
+      const calificacion = this.calificacionRepository.create({
+        calificacion: createCalificacionDto.calificacion,
+        usuario: { id: user.id },
+        actividad: { id: actividadId },
+      });
+      
+      await this.calificacionRepository.save(calificacion);
+      console.log('Calificación creada con éxito');
+
+      return 'Calificación creada con éxito';
+    } catch (error) {
+      console.log('Error en create calificación:', error);
+      return 'Error al crear la calificación: ' + error.message;
+    }
   }
 
   async findAll(user) {
