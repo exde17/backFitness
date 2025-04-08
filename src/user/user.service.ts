@@ -302,7 +302,7 @@ export class UserService {
       const user = this.userRepository.create({
         ...userData,
         password: hashedPassword,
-        role: ['monitor'],
+        // role: ['monitor'], 
       });
       const savedUser = await queryRunner.manager.save(user);
       const datosGenerale = this.datosGeneraleRepository.create({

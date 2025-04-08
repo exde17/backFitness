@@ -16,8 +16,8 @@ export class CreateMonitorDto {
     password: string;
 
     // rol es array
-    // @IsString()
-    // @IsNotEmpty()
-    // role: string[];
+    @IsString()
+    @IsNotEmpty()
+    role: string[];
 
 }
