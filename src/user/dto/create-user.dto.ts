@@ -9,7 +9,10 @@ import {
   Matches,
   MaxLength,
   MinLength,
+  IsArray,
+  ArrayMinSize,
 } from 'class-validator';
+import { Transform } from 'class-transformer';
 import { GenderType } from '../utils/genderType.enum';
 import { DocumentType } from "../../user/utils/documentType.enum";
 import { ZonaType } from '../utils/zonaType.enum';
@@ -117,4 +120,23 @@ export class CreateUserDto {
     @IsEnum(ZonaType)
     @IsNotEmpty()
     readonly zona: ZonaType;
+
+    @IsArray()
+    @IsString({ each: true })
+    @ArrayMinSize(1)
+    @Transform(({ value }) => {
+      // Si viene como string (por ejemplo, desde un form-data), convertirlo a array
+      if (typeof value === 'string') {
+        try {
+          // Intenta parsearlo como JSON
+          return JSON.parse(value);
+        } catch (e) {
+          // Si no es JSON válido, asume que es un solo rol y conviértelo en array
+          return [value];
+        }
+      }
+      // Si ya es un array, déjalo como está
+      return value;
+    })
+    readonly roles: string[];
 }
