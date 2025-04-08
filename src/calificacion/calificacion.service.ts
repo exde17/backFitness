@@ -165,6 +165,7 @@ export class CalificacionService {
 
       // Actualizo la asistencia
         const asistencia = await this.asistenciaRepository.findOne({
+          relations: ['actividad'],
           where: {
             documento: userDatos.documentNumber,
             actividad:  createCalificacionDto.actividad ,
