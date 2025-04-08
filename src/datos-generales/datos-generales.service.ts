@@ -12,11 +12,12 @@ export class DatosGeneralesService {
     @InjectRepository(DatosGenerale)
     private readonly datosGeneraleRepository: Repository<DatosGenerale>,
   ) {}
-  async create(createDatosGeneraleDto: CreateDatosGeneraleDto) {
+  async create(user: User, createDatosGeneraleDto: CreateDatosGeneraleDto) {
     try {
       // console.log(createDatosGeneraleDto);
       const datosGenerale = this.datosGeneraleRepository.create({
         ...createDatosGeneraleDto,
+        user:{ id: user.id},
       });
       await this.datosGeneraleRepository.save(datosGenerale);
       return 'Datos generales creados';

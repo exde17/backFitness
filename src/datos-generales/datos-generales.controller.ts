@@ -10,8 +10,12 @@ export class DatosGeneralesController {
   constructor(private readonly datosGeneralesService: DatosGeneralesService) {}
 
   @Post()
-  create(@Body() createDatosGeneraleDto: CreateDatosGeneraleDto) {
-    return this.datosGeneralesService.create(createDatosGeneraleDto);
+  @Auth()
+  create(
+    @Body() createDatosGeneraleDto: CreateDatosGeneraleDto,
+    @GetUser() user: User,
+  ) {
+    return this.datosGeneralesService.create(user,createDatosGeneraleDto);
   }
 
   // @Get()
