@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, ConflictException } from '@nestjs/common';
 import { CreateCalificacionDto } from './dto/create-calificacion.dto';
 import { UpdateCalificacionDto } from './dto/update-calificacion.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -37,7 +37,19 @@ export class CalificacionService {
         return 'No se encontró el documento del usuario';
       }
 
-      // 2. Buscar la asistencia
+      // 2. Verificar si ya existe una calificación para esta actividad y usuario
+      const existingCalificacion = await this.calificacionRepository.findOne({
+        where: {
+          usuario: { id: user.id },
+          actividad: { id: createCalificacionDto.actividad.id },
+        },
+      });
+
+      if (existingCalificacion) {
+        return 'Ya existe una calificación para esta actividad';
+      }
+
+      // 3. Buscar la asistencia
       const asistencia = await this.asistenciaRepository.findOne({
         where: {
           documento: userDatos.documentNumber,
@@ -49,19 +61,26 @@ export class CalificacionService {
         return 'No se encontró la asistencia';
       }
 
-      // 3. Actualizar explícitamente el estado de la asistencia
-      await this.asistenciaRepository.update(
+      // 4. Verificar si la asistencia ya está calificada
+      if (asistencia.calificado) {
+        return 'Esta asistencia ya ha sido calificada';
+      }
+
+      // 5. Actualizar explícitamente el estado de la asistencia usando queryRunner
+      // para asegurar que se ejecute dentro de la transacción
+      await queryRunner.manager.update(
+        Asistencia,
         { id: asistencia.id },
         { calificado: true }
       );
       
-      // 4. Crear la calificación
+      // 6. Crear la calificación
       const calificacion = this.calificacionRepository.create({
         ...createCalificacionDto,
         usuario: { id: user.id },
       });
       
-      await this.calificacionRepository.save(calificacion);
+      await queryRunner.manager.save(calificacion);
       
       // Confirmar la transacción
       await queryRunner.commitTransaction();
@@ -72,6 +91,12 @@ export class CalificacionService {
       await queryRunner.rollbackTransaction();
       
       console.log('Error en create calificación:', error);
+      
+      // Verificar si es un error de restricción de base de datos
+      if (error.code === '23505') { // Código para violación de restricción única en PostgreSQL
+        return 'Ya existe una calificación para esta actividad';
+      }
+      
       return 'Error al crear la calificación: ' + error.message;
     } finally {
       // Liberar el queryRunner
