@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateCalificacionDto } from './dto/create-calificacion.dto';
 import { UpdateCalificacionDto } from './dto/update-calificacion.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { And, Repository } from 'typeorm';
 import { Calificacion } from './entities/calificacion.entity';
 import { User } from 'src/user/entities/user.entity';
 import { Asistencia } from 'src/asistencia/entities/asistencia.entity';
