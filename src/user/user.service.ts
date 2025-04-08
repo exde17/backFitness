@@ -293,6 +293,15 @@ export class UserService {
 
   // crear monitor
   async createMonitor(createMonitorDto: CreateMonitorDto) {
+    let rol: string
+    if(createMonitorDto.rol.includes('monitor')){
+      rol = 'monitor'
+    }else if(createMonitorDto.rol.includes('medico')){
+      rol = 'medico'
+    }else{
+      // devuelvo un error
+      throw new HttpException('El rol no es valido', 400);
+    }
     const queryRunner = this.dataSource.createQueryRunner();  
     await queryRunner.connect();
     await queryRunner.startTransaction();
@@ -302,7 +311,7 @@ export class UserService {
       const user = this.userRepository.create({
         ...userData,
         password: hashedPassword,
-        // role: ['monitor'], 
+        role: [rol], 
       });
       const savedUser = await queryRunner.manager.save(user);
       const datosGenerale = this.datosGeneraleRepository.create({
