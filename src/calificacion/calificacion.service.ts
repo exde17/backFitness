@@ -130,21 +130,28 @@ export class CalificacionService {
         throw new NotFoundException('No se encontró el documento del usuario');
       }
 
-      // 2. Buscar la asistencia usando QueryBuilder para garantizar el comportamiento AND
-      const asistencia = await this.asistenciaRepository
-        .createQueryBuilder('asistencia')
-        .innerJoinAndSelect('asistencia.actividad', 'actividad')
-        .where('asistencia.documento = :documento', { documento: userDatos.documentNumber })
-        .andWhere('actividad.id = :actividadId', { actividadId: createCalificacionDto.actividad.id })
-        .getOne();
+      // Verificar que el documento existe
+      console.log('Documento del usuario:', userDatos.documentNumber);
+      console.log('ID de actividad:', createCalificacionDto.actividad.id);
 
-      if (!asistencia) {
+      // 2. Buscar la asistencia directamente con SQL nativo para evitar problemas con las relaciones
+      const asistencias = await this.asistenciaRepository.query(
+        `SELECT * FROM asistencia WHERE documento = $1 AND "actividadId" = $2`,
+        [userDatos.documentNumber, createCalificacionDto.actividad.id]
+      );
+
+      if (!asistencias || asistencias.length === 0) {
         throw new NotFoundException('No se encontró la asistencia');
       }
 
+      const asistencia = asistencias[0];
+      console.log('Asistencia encontrada:', asistencia);
+
       // 3. Actualizar la asistencia
-      asistencia.calificado = true;
-      await queryRunner.manager.save(asistencia);
+      await this.asistenciaRepository.query(
+        `UPDATE asistencia SET calificado = true WHERE id = $1`,
+        [asistencia.id]
+      );
 
       // 4. Crear la calificación
       const calificacion = this.calificacionRepository.create({
@@ -167,7 +174,7 @@ export class CalificacionService {
         return error.message;
       }
       
-      throw new InternalServerErrorException('Error al crear la calificación');
+      return 'Error al crear la calificación: ' + error.message;
     } finally {
       // Liberar el queryRunner
       await queryRunner.release();
