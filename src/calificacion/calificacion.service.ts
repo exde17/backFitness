@@ -163,6 +163,8 @@ export class CalificacionService {
         return 'No se encontro el documento del usuario';
       }
 
+      console.log('la actividad: ',createCalificacionDto.actividad)
+
       // Actualizo la asistencia
         const asistencia = await this.asistenciaRepository.findOne({
           relations: ['actividad'],
