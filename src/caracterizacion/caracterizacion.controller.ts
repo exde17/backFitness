@@ -15,7 +15,7 @@ export class CaracterizacionController {
     @Body() createCaracterizacionDto: CreateCaracterizacionDto,
     @GetUser() user: User
   ) {
-    return this.caracterizacionService.create(createCaracterizacionDto, user);
+    return this.caracterizacionService.create(createCaracterizacionDto);
   }
 
   @Get()

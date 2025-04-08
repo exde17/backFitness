@@ -13,7 +13,7 @@ export class CaracterizacionService {
     @InjectRepository(Caracterizacion)
     private caracterizacionRepository: Repository<Caracterizacion>,
   ) {}
-  async create(createCaracterizacionDto: CreateCaracterizacionDto, user: User) {
+  async create(createCaracterizacionDto: CreateCaracterizacionDto) {
     try {
       const caracterizacion = this.caracterizacionRepository.create({
         ...createCaracterizacionDto, 
