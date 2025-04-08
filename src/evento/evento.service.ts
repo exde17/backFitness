@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateEventoDto } from './dto/create-evento.dto';
 import { UpdateEventoDto } from './dto/update-evento.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, MoreThanOrEqual } from 'typeorm';
 import { Evento } from './entities/evento.entity';
 
 @Injectable()
@@ -27,8 +27,17 @@ export class EventoService {
 
   async findAll() {
     try {
+      const fechaActual = new Date();
+      
+      // Buscar eventos cuya fecha sea mayor o igual a la fecha actual
       const eventos = await this.eventoRepository.find({
         relations: ['lugar'],
+        where: {
+          fecha: MoreThanOrEqual(fechaActual)
+        },
+        order: {
+          fecha: 'ASC' // Ordenar por fecha ascendente
+        }
       });
 
       return eventos;
@@ -36,7 +45,6 @@ export class EventoService {
     } catch (error) {
       console.log(error);
       return 'Error al obtener los eventos';
-      
     }
   }
 
