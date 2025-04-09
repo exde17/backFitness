@@ -39,6 +39,18 @@ export class UserController {
     return this.userService.login(loginUserDto);
   }
 
+  // cambiar contraseña
+  @Post('change-password/:id')
+  @Auth()
+  async changePassword(
+    // @GetUser('email') email: string,
+    @Param('id') id: string,
+    @Body('newPassword') newPassword: string,
+  ) {
+    return this.userService.changePassword(id, newPassword);
+  }
+  
+
   @Get()
   @UseGuards(AuthGuard(), UseRoleGuard)
   findAll(

@@ -92,6 +92,33 @@ export class UserService {
     }
   }
 
+  // cambiar contraseña
+  async changePassword(id: string, newPassword: string) {
+    console.log('contraseña: ', newPassword);
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      const user = await queryRunner.manager.findOne(User, {
+        where: { id },
+      });
+      if (!user) {
+        throw new UnauthorizedException('usuario no encontrado');
+      }
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      user.password = hashedPassword;
+      await queryRunner.manager.save(user);
+      await queryRunner.commitTransaction();
+      return { message: 'cambio de contraseña exitoso' };
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw new Error(`Error al cambiar contraseña: ${error.message}`);
+    } finally {
+      await queryRunner.release();
+    }
+  }
+  
+
   async login(loginUserDto: LoginUserDto) {
     const queryRunner: QueryRunner = this.dataSource.createQueryRunner();
     let transactionStarted = false;
@@ -117,12 +144,12 @@ export class UserService {
       });
     
       if (!user) {
-        throw new UnauthorizedException('Invalid email');
+        throw new UnauthorizedException('el correo no existe');
       }
     
       const isPasswordValid = bcrypt.compareSync(password, user.password);
       if (!isPasswordValid) {
-        throw new UnauthorizedException('Invalid password');
+        throw new UnauthorizedException('contraseña incorrecta');
       }
     
       // Consultar caracterización dentro de la transacción
