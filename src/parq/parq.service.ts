@@ -48,6 +48,7 @@ async findAllAprobados(name?: string, documentNumber?: string) {
         rest.forEach((item) => {
             data.push({
                 id: item.user.id,
+                email: item.user.email,
                 nombre: item.user.datosGenerales[0]?.name ?? 'vacio',
                 documentType: item.user.datosGenerales[0]?.documentType ?? 'vacio',
                 documentNumber: item.user.datosGenerales[0]?.documentNumber ?? 'vacio',
