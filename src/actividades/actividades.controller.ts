@@ -1,8 +1,9 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { ActividadesService } from './actividades.service';
 import { CreateActividadeDto } from './dto/create-actividade.dto';
 import { UpdateActividadeDto } from './dto/update-actividade.dto';
 import { Auth, GetUser } from 'src/user/decorator';
+import { User } from 'src/user/entities/user.entity';
 
 @Controller('actividades')
 export class ActividadesController {
@@ -12,7 +13,7 @@ export class ActividadesController {
   @Auth()
   async create(
     @Body() createActividadeDto: CreateActividadeDto,
-    @GetUser() user: any
+    @GetUser() user: User
   ) {
     return this.actividadesService.create(createActividadeDto, user);
   }
@@ -37,9 +38,19 @@ export class ActividadesController {
   @Get('monitor')
   @Auth()
   async findMonitor(
-    @GetUser() user: any,
+    @GetUser() user: User,
   ) {
     return this.actividadesService.findMonitor(user);
+  }
+
+  // actividades por rango de fechas
+  @Get('por-fechas')
+  @Auth()
+  async findByDateRange(
+    @Query('fechaInicio') fechaInicio: string,
+    @Query('fechaFin') fechaFin: string
+  ) {
+    return this.actividadesService.findByDateRange(fechaInicio, fechaFin);
   }
 
   @Get()

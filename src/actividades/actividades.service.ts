@@ -89,6 +89,36 @@ export class ActividadesService {
     }
   }
 
+  // actividades por rango de fechas
+  async findByDateRange(fechaInicio: string, fechaFin: string) {
+    try {
+      // Convertir las fechas a formato YYYY-MM-DD
+      const startDate = moment(fechaInicio).format('YYYY-MM-DD');
+      const endDate = moment(fechaFin).format('YYYY-MM-DD');
+      
+      console.log(`Buscando actividades entre: ${startDate} y ${endDate}`);
+      
+      const actividades = await this.actividadeRepository.find({
+        relations: ['user.datosGenerales', 'parque', 'tipoActividad'],
+        where: {
+          fecha: Between(
+            new Date(startDate), 
+            new Date(endDate)
+          ),
+        },
+        order: {
+          fecha: 'ASC',
+          hora: 'ASC'
+        }
+      });
+      
+      return actividades;
+    } catch (error) {
+      console.log(error);
+      return 'Error al obtener las actividades por rango de fechas';
+    }
+  }
+
   async findAll() {
     try {
       return await this.actividadeRepository.find({
