@@ -1,5 +1,6 @@
+import { ComunaCorregimiento } from "src/comuna_corregimiento/entities/comuna_corregimiento.entity";
 import { Parque } from "src/parque/entities/parque.entity";
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class Barrio {
@@ -19,4 +20,7 @@ export class Barrio {
 
     @OneToMany(()=> Parque, parque => parque.barrio)
     parques: Parque[];
+
+    @ManyToOne(()=> ComunaCorregimiento, comunaCorregimiento => comunaCorregimiento.barrios)
+    comunaCorregimiento: ComunaCorregimiento;
 }

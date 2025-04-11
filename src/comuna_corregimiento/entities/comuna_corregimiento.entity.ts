@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Barrio } from 'src/barrio/entities/barrio.entity';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('comuna_corregimiento')
 export class ComunaCorregimiento {
@@ -16,5 +17,8 @@ export class ComunaCorregimiento {
         default: true
     })
     estado: boolean;
+
+    @OneToMany(() => Barrio, barrio => barrio.comunaCorregimiento)
+    barrios: 'Barrio[]';
 
 }
