@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty, IsString, Matches, MaxLength, MinLength } from "class-validator";
+import { IsEmail, IsNotEmpty, IsOptional, IsString, Matches, MaxLength, MinLength } from "class-validator";
 import { Column } from "typeorm";
 
 export class CreateMonitorDto {
@@ -6,6 +6,10 @@ export class CreateMonitorDto {
     @IsEmail()
     @IsNotEmpty()
     email: string;
+
+    @IsString()
+    @IsOptional()
+    usuario: string;
 
     // @IsString()
     // @MinLength(6)

@@ -9,7 +9,7 @@ import {
 import { Column } from 'typeorm';
 
 export class LoginUserDto {
-  @IsEmail()
+  @IsString()
   @IsNotEmpty()
   email: string;
 

@@ -37,7 +37,14 @@ export class UserService {
     try {
       const { password, ...userData } = createUserDto;
 
-      const hashedPassword = await bcrypt.hash(password, 10);
+      // Convertir documentNumber a string antes de usarlo como contraseña
+      const documentNumberString = userData.documentNumber.toString();
+      
+      // la contraseña sera el documentNumber lo mismo que el usuario
+      const hashedPassword = await bcrypt.hash(documentNumberString, 10);
+      
+      // el usuario sera el documentNumber convertido en string
+      userData.usuario = documentNumberString;
       const user = this.userRepository.create({
         ...userData,
         password: hashedPassword,
@@ -127,6 +134,7 @@ export class UserService {
       let caract = true;
       let parq = true;
       let parqAprovado = false;
+      // dice que pide email pero enrealidad es usuario (por seguridad)
       const { email, password } = loginUserDto;
       
       // Conectar primero
@@ -139,12 +147,12 @@ export class UserService {
       // Buscar usuario en la base de datos dentro de la transacción
       const user = await queryRunner.manager.findOne(User, {
         relations: ['datosGenerales'],
-        where: { email },
-        select: ['email', 'password', 'id', 'role', 'datosGenerales'],
+        where: { usuario: email },
+        select: ['email', 'password', 'id', 'role', 'datosGenerales', 'usuario'],
       });
     
       if (!user) {
-        throw new UnauthorizedException('el correo no existe');
+        throw new UnauthorizedException('el usuario no existe');
       }
     
       const isPasswordValid = bcrypt.compareSync(password, user.password);
@@ -335,6 +343,7 @@ export class UserService {
     try {
       const { password, ...userData } = createMonitorDto;
       const hashedPassword = await bcrypt.hash(password, 10);
+      userData.usuario = userData.email;
       const user = this.userRepository.create({
         ...userData,
         password: hashedPassword,

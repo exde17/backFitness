@@ -36,6 +36,12 @@ export class User {
   email: string;
 
   @Column('text', {
+    nullable: true,
+    unique: true,
+  })
+  usuario: string;
+
+  @Column('text', {
     nullable: false,
     select: false,
   })

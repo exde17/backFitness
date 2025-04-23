@@ -31,8 +31,18 @@ export class CreateUserDto {
   email: string;
 
   @IsString()
-  @MinLength(4, { message: 'Password must be at least 4 characters long' })
-  @MaxLength(20)
+  @IsOptional()
+  // @MinLength(4, { message: 'Username must be at least 4 characters long' })
+  // @MaxLength(20)
+  // @Matches(/^[a-zA-Z0-9]+$/, {
+  //   message: 'Username can only contain letters and numbers',
+  // })
+  usuario: string;
+
+  @IsString()
+  // @MinLength(4, { message: 'Password must be at least 4 characters long' })
+  // @MaxLength(20)
+  @IsOptional()
   password: string;
 
   //////////////////////////////////////////////////////
