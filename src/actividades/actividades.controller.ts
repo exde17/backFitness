@@ -53,6 +53,17 @@ export class ActividadesController {
     return this.actividadesService.findByDateRange(fechaInicio, fechaFin);
   }
 
+  // actividades por rango de fechas y usuario monitor logueado
+  @Get('monitor-por-fechas')
+  @Auth()
+  async findByDateRangeAndMonitor(
+    @Query('fechaInicio') fechaInicio: string,
+    @Query('fechaFin') fechaFin: string,
+    @GetUser() user: User
+  ) {
+    return this.actividadesService.findByDateRangeAndMonitor(fechaInicio, fechaFin, user);
+  }
+
   @Get()
   @Auth()
   findAll() {

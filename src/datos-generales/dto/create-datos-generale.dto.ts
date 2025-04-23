@@ -33,7 +33,7 @@ export class CreateDatosGeneraleDto {
   readonly barrio: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   readonly comunaCorregimiento: string;
 
   @IsString()
