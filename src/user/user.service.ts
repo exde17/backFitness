@@ -313,7 +313,9 @@ export class UserService {
       const queryBuilder = this.userRepository.createQueryBuilder('user')
         .leftJoinAndSelect('user.datosGenerales', 'datosGenerales')
         .where('user.isActive = :isActive', { isActive: true })
-        .andWhere('user.role @> ARRAY[:role]::text[]', { role: 'monitor' });
+        // .andWhere('user.role @> ARRAY[:role]::text[]', { role: 'monitor'});
+        .andWhere('(user.role @> ARRAY[:roleMonitor]::text[] OR user.role @> ARRAY[:roleMedico]::text[])', 
+        { roleMonitor: 'monitor', roleMedico: 'medico' });
 
       // Aplicar filtros si se proporcionan
       if (filters) {
