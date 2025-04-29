@@ -62,4 +62,11 @@ export class Actividade {
         default: true,
     })
     estado: boolean;
+
+    // descripcion
+    @Column('text',{
+        nullable: true,
+        default: ""
+    })
+    descripcion: string;
 }

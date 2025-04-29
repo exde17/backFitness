@@ -31,4 +31,8 @@ export class CreateActividadeDto {
     @IsString()
     @IsNotEmpty()
     tipoActividad: TipoActividad;
+
+    @IsString()
+    @IsOptional()
+    descripcion?: string;
 }
