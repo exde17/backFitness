@@ -308,21 +308,32 @@ export class UserService {
   }
 
   // traer los usuarios con rol monitor
-  async findMonitores(){
+  async findMonitores(filters?: { name?: string; documentNumber?: string }) {
     try {
-      const monitores = await this.userRepository.find({
-        
-        where: {
-          isActive: true,
-        },
-        relations: ['datosGenerales'],
-      });
+      const queryBuilder = this.userRepository.createQueryBuilder('user')
+        .leftJoinAndSelect('user.datosGenerales', 'datosGenerales')
+        .where('user.isActive = :isActive', { isActive: true })
+        .andWhere('user.role @> ARRAY[:role]::text[]', { role: 'monitor' });
 
-      const monitoresFiltrados = monitores.filter((monitor) => monitor.role.includes('monitor'));
-      return monitoresFiltrados;
+      // Aplicar filtros si se proporcionan
+      if (filters) {
+        if (filters.name) {
+          queryBuilder.andWhere('LOWER(datosGenerales.name) LIKE LOWER(:name)', { 
+            name: `%${filters.name}%` 
+          });
+        }
+        
+        if (filters.documentNumber) {
+          queryBuilder.andWhere('datosGenerales.documentNumber LIKE :documentNumber', { 
+            documentNumber: `%${filters.documentNumber}%` 
+          });
+        }
+      }
+
+      return await queryBuilder.getMany();
     } catch (error) {
       console.log(error);
-      return 'Error al obtener los monitores';
+      throw new HttpException('Error al obtener los monitores', 500);
     }
   }
 
@@ -363,6 +374,32 @@ export class UserService {
       await queryRunner.rollbackTransaction();
       throw new Error(`Error al crear monitor: ${error.message}`);
     } finally {
+      await queryRunner.release();
+    }
+  }
+
+  // cambiar estado
+  async changeStatus(id: string, status: string) {
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {   
+      const user = await queryRunner.manager.findOne(User, {
+        where: { id },
+      });
+      if (!user) {
+        throw new UnauthorizedException('usuario no encontrado');
+      }
+      user.isActive = status === 'true' ? true : false;
+      await queryRunner.manager.save(user);
+      await queryRunner.commitTransaction();
+      return { message: 'cambio de estado exitoso' };
+    }
+    catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw new Error(`Error al cambiar estado: ${error.message}`);
+    }
+    finally {
       await queryRunner.release();
     }
   }

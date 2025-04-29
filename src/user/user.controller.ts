@@ -9,6 +9,7 @@ import {
   UseGuards,
   SetMetadata,
   UseFilters,
+  Query,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto, UpdateUserDto, LoginUserDto } from './dto';
@@ -93,8 +94,19 @@ export class UserController {
   // traer los usuarios con rol monitor
   @Get('monitor')
   @Auth()
-  findMonitores(){
-    return this.userService.findMonitores();
+  findMonitores(
+    @Query('name') name?: string,
+    @Query('documentNumber') documentNumber?: string
+  ) {
+    const filters: any = {};
+    
+    if (name) filters.name = name;
+    if (documentNumber) filters.documentNumber = documentNumber;
+    
+    // Si no hay filtros, pasamos undefined para obtener todos los monitores
+    return this.userService.findMonitores(
+      Object.keys(filters).length > 0 ? filters : undefined
+    );
   }
 
   @Get(':id')
@@ -105,6 +117,16 @@ export class UserController {
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.userService.update(+id, updateUserDto);
+  }
+
+  // cambiar estado
+  @Patch('change-status/:id')
+  @Auth()
+  async changeStatus(
+    @Param('id') id: string,
+    @Body('status') status: string,
+  ) {
+    return this.userService.changeStatus(id, status);
   }
 
   @Delete(':id')
