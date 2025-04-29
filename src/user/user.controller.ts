@@ -121,7 +121,7 @@ export class UserController {
 
   // cambiar estado
   @Patch('change-status/:id')
-  @Auth()
+  @Auth(ValidRoles.superUser)
   async changeStatus(
     @Param('id') id: string,
     @Body('status') status: string,
