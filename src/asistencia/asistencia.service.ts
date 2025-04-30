@@ -235,7 +235,7 @@ export class AsistenciaService {
     return `This action returns all asistencia`;
   }
 
-  findOne(id: number) {
+  async findOne(id: string) {
     return `This action returns a #${id} asistencia`;
   }
 
@@ -246,4 +246,26 @@ export class AsistenciaService {
   remove(id: number) {
     return `This action removes a #${id} asistencia`;
   }
+
+  // traer asistencias por id de actividad y traer el numero de asistencias que en este caso es el numero de registeros
+  async findByActividad(id: string) {
+    try {
+      const asistencias = await this.asistenciaRepository.find({
+        relations: ['actividad'],
+        where: {
+          actividad: { id },
+        },
+      });
+
+      return {
+        numAsitencia: asistencias.length
+      }
+       
+    }
+    catch (error) {
+      console.log(error);
+      return 'Error al obtener numero de asistencias';
+    }
+  }
+
 }

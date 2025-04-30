@@ -31,7 +31,7 @@ export class ActividadesController {
   @Get('dia')
   @Auth()
   async findDia() {
-    return this.actividadesService.findDia();
+    return this.actividadesService.findSemana();
   }
 
   // actividades por monitor 

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateActividadeDto } from './dto/create-actividade.dto';
 import { UpdateActividadeDto } from './dto/update-actividade.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -42,25 +42,50 @@ export class ActividadesService {
     }
   }
 
-  async findDia() {
-    try {
-      // Obtener la fecha de hoy en Colombia (UTC-5)
-      const todayInColombia = moment().tz('America/Bogota').format('YYYY-MM-DD');
+  // async findDia() {
+  //   try {
+  //     // Obtener la fecha de hoy en Colombia (UTC-5)
+  //     const todayInColombia = moment().tz('America/Bogota').format('YYYY-MM-DD');
       
-      console.log(`Buscando actividades con fecha: ${todayInColombia}`);
+  //     console.log(`Buscando actividades con fecha: ${todayInColombia}`);
+      
+  //     const actividades = await this.actividadeRepository.find({
+  //       relations: ['user.datosGenerales', 'parque', 'tipoActividad'],
+  //       where: {
+  //         fecha: Raw((alias) => `CAST(${alias} AS TEXT) = :today`, { today: todayInColombia }),
+  //         // estado: true,
+  //       },
+  //     });
+      
+  //     return actividades;
+  //   } catch (error) {
+  //     console.log(error);
+  //     return 'Error al obtener las actividades';
+  //   }
+  // }
+  async findSemana() {
+    try {
+      // Obtener el inicio y fin de la semana actual en Colombia (UTC-5)
+      const startOfWeek = moment().tz('America/Bogota').startOf('week').format('YYYY-MM-DD');
+      const endOfWeek = moment().tz('America/Bogota').endOf('week').format('YYYY-MM-DD');
+      
+      console.log(`Buscando actividades desde: ${startOfWeek} hasta: ${endOfWeek}`);
       
       const actividades = await this.actividadeRepository.find({
         relations: ['user.datosGenerales', 'parque', 'tipoActividad'],
         where: {
-          fecha: Raw((alias) => `CAST(${alias} AS TEXT) = :today`, { today: todayInColombia }),
+          fecha: Between(new Date(startOfWeek), new Date(endOfWeek)),
           // estado: true,
         },
+        order: {
+          fecha: 'ASC', // Ordenar por fecha ascendente
+        }
       });
       
       return actividades;
     } catch (error) {
       console.log(error);
-      return 'Error al obtener las actividades';
+      throw new HttpException('Error al obtener las actividades de la semana', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 

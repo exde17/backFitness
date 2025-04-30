@@ -4,6 +4,7 @@ import { CreateAsistenciaDto } from './dto/create-asistencia.dto';
 import { UpdateAsistenciaDto } from './dto/update-asistencia.dto';
 import { Auth, GetUser } from 'src/user/decorator';
 import { User } from 'src/user/entities/user.entity';
+import { ValidRoles } from 'src/user/interfaces';
 
 @Controller('asistencia')
 export class AsistenciaController {
@@ -32,7 +33,16 @@ export class AsistenciaController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.asistenciaService.findOne(+id);
+    return this.asistenciaService.findOne(id);
+  }
+
+  // traer asistencias por id de actividad
+  @Get('numActividad/:id')
+  @Auth(ValidRoles.admin, ValidRoles.superUser)
+  async findByActividad(
+    @Param('id') id: string
+  ) {
+    return this.asistenciaService.findByActividad(id);
   }
 
   @Patch(':id')
