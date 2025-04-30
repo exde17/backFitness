@@ -8,6 +8,12 @@ import { User } from 'src/user/entities/user.entity';
 import { DatosGenerale } from 'src/datos-generales/entities/datos-generale.entity';
 import { Actividade } from 'src/actividades/entities/actividade.entity';
 import { Parque } from 'src/parque/entities/parque.entity';
+import { 
+  GenderStatistics, 
+  BarrioGenderStatistics, 
+  ZonaGenderStatistics,
+  GenderStatisticsResponse
+} from './interfaces/gender-statistics.interface';
 
 @Injectable()
 export class AsistenciaService {
@@ -268,4 +274,265 @@ export class AsistenciaService {
     }
   }
 
+  /**
+   * Calcula el promedio de asistencias por género
+   * @returns Estadísticas de asistencia por género
+   */
+  async getAttendanceAverageByGender(): Promise<GenderStatisticsResponse> {
+    try {
+      // Primero, obtener el total de asistencias para verificar
+      const totalAsistencias = await this.asistenciaRepository.count();
+      console.log(`Total de asistencias en la base de datos: ${totalAsistencias}`);
+
+      // Obtener todos los géneros únicos de la base de datos
+      const gendersResult = await this.datosGeneraleRepository
+        .createQueryBuilder('datosGenerales')
+        .select('DISTINCT datosGenerales.gender', 'gender')
+        .where('datosGenerales.gender IS NOT NULL')
+        .getRawMany();
+      
+      const uniqueGenders = gendersResult.map(item => item.gender);
+      console.log('Géneros únicos encontrados:', uniqueGenders);
+      
+      // Obtener todos los barrios únicos de la base de datos
+      const barriosResult = await this.datosGeneraleRepository
+        .createQueryBuilder('datosGenerales')
+        .select('DISTINCT datosGenerales.barrio', 'barrio')
+        .where('datosGenerales.barrio IS NOT NULL')
+        .getRawMany();
+      
+      const uniqueBarrios = barriosResult.map(item => item.barrio);
+      console.log('Barrios únicos encontrados:', uniqueBarrios);
+      
+      // Obtener todas las zonas únicas de la base de datos
+      const zonasResult = await this.datosGeneraleRepository
+        .createQueryBuilder('datosGenerales')
+        .select('DISTINCT datosGenerales.zona', 'zona')
+        .where('datosGenerales.zona IS NOT NULL')
+        .getRawMany();
+      
+      const uniqueZonas = zonasResult.map(item => item.zona);
+      console.log('Zonas únicas encontradas:', uniqueZonas);
+
+      // Obtener todas las asistencias con sus documentos
+      const asistencias = await this.asistenciaRepository.find();
+      console.log(`Asistencias recuperadas: ${asistencias.length}`);
+
+      // Obtener todos los datos generales para mapear documentos a géneros, barrios y zonas
+      const datosGenerales = await this.datosGeneraleRepository.find();
+      console.log(`Datos generales recuperados: ${datosGenerales.length}`);
+
+      // Crear un mapa de documento a datos generales para búsqueda rápida
+      const documentoMap = new Map<string, DatosGenerale>();
+      datosGenerales.forEach(dato => {
+        documentoMap.set(dato.documentNumber, dato);
+      });
+
+      // Procesar manualmente las asistencias para crear los datos de estadísticas
+      const attendanceData = [];
+      
+      for (const asistencia of asistencias) {
+        const documento = asistencia.documento;
+        const datosGenerale = documentoMap.get(documento);
+        
+        if (datosGenerale) {
+          attendanceData.push({
+            gender: datosGenerale.gender || 'No especificado',
+            barrio: datosGenerale.barrio || 'No especificado',
+            zona: datosGenerale.zona || 'No especificado',
+            attendanceCount: 1
+          });
+        } else {
+          console.log(`No se encontraron datos generales para el documento: ${documento}`);
+          attendanceData.push({
+            gender: 'No especificado',
+            barrio: 'No especificado',
+            zona: 'No especificado',
+            attendanceCount: 1
+          });
+        }
+      }
+
+      console.log(`Datos de asistencia procesados: ${attendanceData.length}`);
+      console.log('Muestra de datos procesados:', attendanceData.slice(0, 3));
+
+      // Calcular estadísticas generales por género
+      const generalStats = this.calculateGeneralStatistics(attendanceData, uniqueGenders);
+      
+      // Calcular estadísticas por barrio
+      const barrioStats = this.calculateBarrioStatistics(attendanceData, uniqueGenders, uniqueBarrios);
+      
+      // Calcular estadísticas por zona (rural/urbana)
+      const zonaStats = this.calculateZonaStatistics(attendanceData, uniqueGenders, uniqueZonas);
+
+      return {
+        general: generalStats,
+        byBarrio: barrioStats,
+        byZona: zonaStats,
+      };
+    } catch (error) {
+      console.log('Error al obtener estadísticas de asistencia por género:', error);
+      throw new Error('Error al obtener estadísticas de asistencia por género');
+    }
+  }
+
+  /**
+   * Calcula estadísticas generales de asistencia por género
+   */
+  private calculateGeneralStatistics(data: any[], uniqueGenders: string[]): GenderStatistics[] {
+    // Crear un mapa para contar asistencias por género
+    const genderCountMap = new Map<string, number>();
+    
+    // Inicializar con todos los géneros
+    uniqueGenders.forEach(gender => {
+      genderCountMap.set(gender, 0);
+    });
+    
+    // Asegurarse de que 'No especificado' esté en el mapa
+    if (!genderCountMap.has('No especificado')) {
+      genderCountMap.set('No especificado', 0);
+    }
+    
+    // Contar asistencias por género
+    data.forEach(item => {
+      const gender = item.gender;
+      const currentCount = genderCountMap.get(gender) || 0;
+      genderCountMap.set(gender, currentCount + 1);
+    });
+    
+    // Convertir a formato de estadísticas
+    return Array.from(genderCountMap.entries()).map(([gender, count]) => ({
+      gender,
+      count,
+      average: count // En este caso, el promedio es igual al conteo ya que cada asistencia cuenta como 1
+    }));
+  }
+
+  /**
+   * Calcula estadísticas de asistencia por género y barrio
+   */
+  private calculateBarrioStatistics(
+    data: any[], 
+    uniqueGenders: string[], 
+    uniqueBarrios: string[]
+  ): BarrioGenderStatistics[] {
+    // Crear un mapa para agrupar por barrio
+    const barrioMap = new Map<string, Map<string, number>>();
+    
+    // Inicializar con todos los barrios
+    uniqueBarrios.forEach(barrio => {
+      const genderMap = new Map<string, number>();
+      uniqueGenders.forEach(gender => {
+        genderMap.set(gender, 0);
+      });
+      // Asegurarse de que 'No especificado' esté en el mapa
+      if (!genderMap.has('No especificado')) {
+        genderMap.set('No especificado', 0);
+      }
+      barrioMap.set(barrio, genderMap);
+    });
+    
+    // Asegurarse de que 'No especificado' esté en el mapa de barrios
+    if (!barrioMap.has('No especificado')) {
+      const genderMap = new Map<string, number>();
+      uniqueGenders.forEach(gender => {
+        genderMap.set(gender, 0);
+      });
+      genderMap.set('No especificado', 0);
+      barrioMap.set('No especificado', genderMap);
+    }
+    
+    // Contar asistencias por barrio y género
+    data.forEach(item => {
+      const barrio = item.barrio;
+      const gender = item.gender;
+      
+      if (!barrioMap.has(barrio)) {
+        const genderMap = new Map<string, number>();
+        uniqueGenders.forEach(g => {
+          genderMap.set(g, 0);
+        });
+        genderMap.set('No especificado', 0);
+        barrioMap.set(barrio, genderMap);
+      }
+      
+      const genderMap = barrioMap.get(barrio);
+      const currentCount = genderMap.get(gender) || 0;
+      genderMap.set(gender, currentCount + 1);
+    });
+    
+    // Convertir a formato de estadísticas
+    return Array.from(barrioMap.entries()).map(([barrio, genderMap]) => ({
+      barrio,
+      statistics: Array.from(genderMap.entries()).map(([gender, count]) => ({
+        gender,
+        count,
+        average: count // En este caso, el promedio es igual al conteo ya que cada asistencia cuenta como 1
+      }))
+    }));
+  }
+
+  /**
+   * Calcula estadísticas de asistencia por género y zona (rural/urbana)
+   */
+  private calculateZonaStatistics(
+    data: any[], 
+    uniqueGenders: string[], 
+    uniqueZonas: string[]
+  ): ZonaGenderStatistics[] {
+    // Crear un mapa para agrupar por zona
+    const zonaMap = new Map<string, Map<string, number>>();
+    
+    // Inicializar con todas las zonas
+    uniqueZonas.forEach(zona => {
+      const genderMap = new Map<string, number>();
+      uniqueGenders.forEach(gender => {
+        genderMap.set(gender, 0);
+      });
+      // Asegurarse de que 'No especificado' esté en el mapa
+      if (!genderMap.has('No especificado')) {
+        genderMap.set('No especificado', 0);
+      }
+      zonaMap.set(zona, genderMap);
+    });
+    
+    // Asegurarse de que 'No especificado' esté en el mapa de zonas
+    if (!zonaMap.has('No especificado')) {
+      const genderMap = new Map<string, number>();
+      uniqueGenders.forEach(gender => {
+        genderMap.set(gender, 0);
+      });
+      genderMap.set('No especificado', 0);
+      zonaMap.set('No especificado', genderMap);
+    }
+    
+    // Contar asistencias por zona y género
+    data.forEach(item => {
+      const zona = item.zona;
+      const gender = item.gender;
+      
+      if (!zonaMap.has(zona)) {
+        const genderMap = new Map<string, number>();
+        uniqueGenders.forEach(g => {
+          genderMap.set(g, 0);
+        });
+        genderMap.set('No especificado', 0);
+        zonaMap.set(zona, genderMap);
+      }
+      
+      const genderMap = zonaMap.get(zona);
+      const currentCount = genderMap.get(gender) || 0;
+      genderMap.set(gender, currentCount + 1);
+    });
+    
+    // Convertir a formato de estadísticas
+    return Array.from(zonaMap.entries()).map(([zona, genderMap]) => ({
+      zona,
+      statistics: Array.from(genderMap.entries()).map(([gender, count]) => ({
+        gender,
+        count,
+        average: count // En este caso, el promedio es igual al conteo ya que cada asistencia cuenta como 1
+      }))
+    }));
+  }
 }

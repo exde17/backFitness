@@ -5,7 +5,10 @@ import { UpdateAsistenciaDto } from './dto/update-asistencia.dto';
 import { Auth, GetUser } from 'src/user/decorator';
 import { User } from 'src/user/entities/user.entity';
 import { ValidRoles } from 'src/user/interfaces';
+import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { GenderStatisticsResponse } from './interfaces/gender-statistics.interface';
 
+@ApiTags('Asistencia')
 @Controller('asistencia')
 export class AsistenciaController {
   constructor(
@@ -53,5 +56,16 @@ export class AsistenciaController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.asistenciaService.remove(+id);
+  }
+
+  @Get('estadisticas/genero')
+  @Auth()
+  @ApiOperation({ summary: 'Obtener promedio de asistencias por género' })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Retorna estadísticas de asistencia por género, incluyendo promedios generales, por barrio y por zona'
+  })
+  getAttendanceAverageByGender(): Promise<GenderStatisticsResponse> {
+    return this.asistenciaService.getAttendanceAverageByGender();
   }
 }
