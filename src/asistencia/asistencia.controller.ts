@@ -38,7 +38,7 @@ export class AsistenciaController {
 
   // traer asistencias por id de actividad
   @Get('numActividad/:id')
-  @Auth(ValidRoles.admin, ValidRoles.superUser)
+  @Auth(ValidRoles.monitor, ValidRoles.superUser)
   async findByActividad(
     @Param('id') id: string
   ) {
