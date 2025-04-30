@@ -24,4 +24,8 @@ export class CreateCalificacionDto {
 
     @IsOptional()
     estado?: boolean;
+
+    @IsOptional()
+    @IsString()
+    comentario?: string;
 }

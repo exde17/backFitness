@@ -38,4 +38,9 @@ export class Calificacion {
         nullable: false,
     })
     estado: boolean;
+
+    @Column('text', {
+        nullable: true,
+    })
+    comentario: string;
 }

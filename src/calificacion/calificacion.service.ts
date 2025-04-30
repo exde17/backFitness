@@ -210,6 +210,7 @@ export class CalificacionService {
         calificacion: createCalificacionDto.calificacion,
         usuario: { id: user.id },
         actividad: { id: actividadId },
+        comentario: createCalificacionDto.comentario,
       });
       
       await this.calificacionRepository.save(calificacion);
