@@ -282,7 +282,7 @@ export class AsistenciaService {
     try {
       // Primero, obtener el total de asistencias para verificar
       const totalAsistencias = await this.asistenciaRepository.count();
-      console.log(`Total de asistencias en la base de datos: ${totalAsistencias}`);
+      // console.log(`Total de asistencias en la base de datos: ${totalAsistencias}`);
 
       // Obtener todos los géneros únicos de la base de datos
       const gendersResult = await this.datosGeneraleRepository
@@ -292,7 +292,7 @@ export class AsistenciaService {
         .getRawMany();
       
       const uniqueGenders = gendersResult.map(item => item.gender);
-      console.log('Géneros únicos encontrados:', uniqueGenders);
+      // console.log('Géneros únicos encontrados:', uniqueGenders);
       
       // Obtener todos los barrios únicos de la base de datos
       const barriosResult = await this.datosGeneraleRepository
@@ -302,7 +302,7 @@ export class AsistenciaService {
         .getRawMany();
       
       const uniqueBarrios = barriosResult.map(item => item.barrio);
-      console.log('Barrios únicos encontrados:', uniqueBarrios);
+      // console.log('Barrios únicos encontrados:', uniqueBarrios);
       
       // Obtener todas las zonas únicas de la base de datos
       const zonasResult = await this.datosGeneraleRepository
@@ -312,15 +312,15 @@ export class AsistenciaService {
         .getRawMany();
       
       const uniqueZonas = zonasResult.map(item => item.zona);
-      console.log('Zonas únicas encontradas:', uniqueZonas);
+      // console.log('Zonas únicas encontradas:', uniqueZonas);
 
       // Obtener todas las asistencias con sus documentos
       const asistencias = await this.asistenciaRepository.find();
-      console.log(`Asistencias recuperadas: ${asistencias.length}`);
+      // console.log(`Asistencias recuperadas: ${asistencias.length}`);
 
       // Obtener todos los datos generales para mapear documentos a géneros, barrios y zonas
       const datosGenerales = await this.datosGeneraleRepository.find();
-      console.log(`Datos generales recuperados: ${datosGenerales.length}`);
+      // console.log(`Datos generales recuperados: ${datosGenerales.length}`);
 
       // Crear un mapa de documento a datos generales para búsqueda rápida
       const documentoMap = new Map<string, DatosGenerale>();
