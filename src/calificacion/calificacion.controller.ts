@@ -4,6 +4,7 @@ import { CreateCalificacionDto } from './dto/create-calificacion.dto';
 import { UpdateCalificacionDto } from './dto/update-calificacion.dto';
 import { Auth, GetUser } from 'src/user/decorator';
 import { User } from 'src/user/entities/user.entity';
+import { ValidRoles } from 'src/user/interfaces';
 
 @Controller('calificacion')
 export class CalificacionController {
@@ -26,6 +27,23 @@ export class CalificacionController {
     return this.calificacionService.findAll(user);
   }
   
+  @Get('promedios')
+  @Auth(ValidRoles.superUser)
+  getPromediosPorActividad() {
+    return this.calificacionService.getPromediosPorActividad();
+  }
+
+  @Get('promedios/:actividadId')
+  @Auth(ValidRoles.superUser)
+  getPromedioPorActividad(@Param('actividadId') actividadId: string) {
+    return this.calificacionService.getPromedioPorActividad(actividadId);
+  }
+
+  @Get('actividad/:actividadId')
+  @Auth()
+  getCalificacionesPorActividad(@Param('actividadId') actividadId: string) {
+    return this.calificacionService.getCalificacionesPorActividad(actividadId);
+  }
 
   @Get(':id')
   findOne(@Param('id') id: string) {

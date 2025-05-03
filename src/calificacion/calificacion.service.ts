@@ -249,4 +249,138 @@ export class CalificacionService {
   remove(id: number) {
     return `This action removes a #${id} calificacion`;
   }
+
+  /**
+   * Calcula el promedio de calificaciones por actividad
+   * @returns Array con los promedios de calificación por actividad
+   */
+  async getPromediosPorActividad() {
+    try {
+      // Utilizamos QueryBuilder para crear una consulta que calcule el promedio
+      const promedios = await this.calificacionRepository
+        .createQueryBuilder('calificacion')
+        .select('actividad.id', 'actividadId')
+        .addSelect('actividad.descripcion', 'descripcionActividad')
+        .addSelect('actividad.fecha', 'fechaActividad')
+        .addSelect('ROUND(AVG(calificacion.calificacion)::numeric, 2)', 'promedio')
+        .addSelect('COUNT(calificacion.id)', 'totalCalificaciones')
+        .innerJoin('calificacion.actividad', 'actividad')
+        .where('calificacion.estado = :estado', { estado: true })
+        .groupBy('actividad.id')
+        .addGroupBy('actividad.descripcion')
+        .addGroupBy('actividad.fecha')
+        .orderBy('actividad.fecha', 'DESC')
+        .getRawMany();
+
+      return {
+        message: 'Promedios calculados correctamente',
+        data: promedios
+      };
+    } catch (error) {
+      console.log('Error al calcular promedios:', error);
+      return {
+        message: 'Error al calcular los promedios de calificaciones',
+        error: error.message
+      };
+    }
+  }
+
+  /**
+   * Calcula el promedio de calificaciones para una actividad específica
+   * @param actividadId ID de la actividad
+   * @returns Promedio de calificaciones para la actividad
+   */
+  async getPromedioPorActividad(actividadId: string) {
+    try {
+      const promedio = await this.calificacionRepository
+        .createQueryBuilder('calificacion')
+        .select('actividad.id', 'actividadId')
+        .addSelect('actividad.descripcion', 'descripcionActividad')
+        .addSelect('ROUND(AVG(calificacion.calificacion)::numeric, 2)', 'promedio')
+        .addSelect('COUNT(calificacion.id)', 'totalCalificaciones')
+        .innerJoin('calificacion.actividad', 'actividad')
+        .where('calificacion.estado = :estado', { estado: true })
+        .andWhere('actividad.id = :actividadId', { actividadId })
+        .groupBy('actividad.id')
+        .addGroupBy('actividad.descripcion')
+        .getRawOne();
+
+      if (!promedio) {
+        return {
+          message: 'No se encontraron calificaciones para esta actividad',
+          data: null
+        };
+      }
+
+      return {
+        message: 'Promedio calculado correctamente',
+        data: promedio
+      };
+    } catch (error) {
+      console.log('Error al calcular promedio de actividad:', error);
+      return {
+        message: 'Error al calcular el promedio de calificaciones',
+        error: error.message
+      };
+    }
+  }
+
+  /**
+   * Obtiene todas las calificaciones de una actividad específica con detalles del usuario
+   * @param actividadId ID de la actividad
+   * @returns Lista de calificaciones con detalles del usuario
+   */
+  async getCalificacionesPorActividad(actividadId: string) {
+    try {
+      const calificaciones = await this.calificacionRepository
+        .createQueryBuilder('calificacion')
+        // .select('calificacion.id', 'id')
+        .addSelect('calificacion.calificacion', 'calificacion')
+        .addSelect('calificacion.comentario', 'comentario')
+        .addSelect('calificacion.fechaCreacion', 'fecha')
+        // .addSelect('usuario.id', 'usuarioId')
+        .addSelect('usuario.email', 'email')
+        // .addSelect('usuario.usuario', 'nombreUsuario')
+        .addSelect('datos.name', 'nombre')
+        .innerJoin('calificacion.usuario', 'usuario')
+        .innerJoin('calificacion.actividad', 'actividad')
+        .leftJoin('usuario.datosGenerales', 'datos')
+        .where('actividad.id = :actividadId', { actividadId })
+        .andWhere('calificacion.estado = :estado', { estado: true })
+        .orderBy('calificacion.fechaCreacion', 'DESC')
+        .getRawMany();
+
+      if (calificaciones.length === 0) {
+        return {
+          message: 'No se encontraron calificaciones para esta actividad',
+          data: []
+        };
+      }
+
+      // Formatear los datos para una mejor presentación
+      const calificacionesFormateadas = calificaciones.map(cal => ({
+        id: cal.id,
+        calificacion: cal.calificacion,
+        comentario: cal.comentario,
+        fecha: cal.fecha,
+        usuario: {
+          id: cal.usuarioId,
+          email: cal.email,
+          usuario: cal.nombreUsuario,
+          nombre: cal.nombre || 'Usuario sin nombre'
+        }
+      }));
+
+      return {
+        message: 'Calificaciones obtenidas correctamente',
+        data: calificacionesFormateadas
+      };
+    } catch (error) {
+      console.log('Error al obtener calificaciones por actividad:', error);
+      return {
+        message: 'Error al obtener las calificaciones de la actividad',
+        error: error.message
+      };
+    }
+  }
 }
