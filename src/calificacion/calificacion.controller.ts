@@ -34,13 +34,13 @@ export class CalificacionController {
   }
 
   @Get('promedios/:actividadId')
-  @Auth(ValidRoles.superUser)
+  @Auth(ValidRoles.superUser, ValidRoles.monitor)
   getPromedioPorActividad(@Param('actividadId') actividadId: string) {
     return this.calificacionService.getPromedioPorActividad(actividadId);
   }
 
   @Get('actividad/:actividadId')
-  @Auth(ValidRoles.superUser)
+  @Auth(ValidRoles.superUser, ValidRoles.monitor)
   getCalificacionesPorActividad(@Param('actividadId') actividadId: string) {
     return this.calificacionService.getCalificacionesPorActividad(actividadId);
   }
