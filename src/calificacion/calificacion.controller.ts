@@ -28,7 +28,7 @@ export class CalificacionController {
   }
   
   @Get('promedios')
-  @Auth(ValidRoles.superUser)
+  @Auth(ValidRoles.superUser, ValidRoles.monitor)
   getPromediosPorActividad() {
     return this.calificacionService.getPromediosPorActividad();
   }
@@ -46,16 +46,19 @@ export class CalificacionController {
   }
 
   @Get(':id')
+  @Auth()
   findOne(@Param('id') id: string) {
     return this.calificacionService.findOne(+id);
   }
 
   @Patch(':id')
+  @Auth()
   update(@Param('id') id: string, @Body() updateCalificacionDto: UpdateCalificacionDto) {
     return this.calificacionService.update(+id, updateCalificacionDto);
   }
 
   @Delete(':id')
+  @Auth()
   remove(@Param('id') id: string) {
     return this.calificacionService.remove(+id);
   }
