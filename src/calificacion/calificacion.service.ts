@@ -264,17 +264,57 @@ export class CalificacionService {
         .addSelect('actividad.fecha', 'fechaActividad')
         .addSelect('ROUND(AVG(calificacion.calificacion)::numeric, 2)', 'promedio')
         .addSelect('COUNT(calificacion.id)', 'totalCalificaciones')
+        .addSelect('parque.id', 'parqueId')
+        .addSelect('parque.nombre', 'nombreParque')
+        .addSelect('tipoActividad.id', 'tipoActividadId')
+        .addSelect('tipoActividad.nombre', 'nombreTipoActividad')
+        .addSelect('monitor.id', 'monitorId')
+        .addSelect('monitor.usuario', 'monitorUsuario')
+        .addSelect('datosMonitor.name', 'monitorNombre')
         .innerJoin('calificacion.actividad', 'actividad')
+        .leftJoin('actividad.parque', 'parque')
+        .leftJoin('actividad.tipoActividad', 'tipoActividad')
+        .leftJoin('actividad.user', 'monitor')
+        .leftJoin('monitor.datosGenerales', 'datosMonitor')
         .where('calificacion.estado = :estado', { estado: true })
         .groupBy('actividad.id')
         .addGroupBy('actividad.descripcion')
         .addGroupBy('actividad.fecha')
+        .addGroupBy('parque.id')
+        .addGroupBy('parque.nombre')
+        .addGroupBy('tipoActividad.id')
+        .addGroupBy('tipoActividad.nombre')
+        .addGroupBy('monitor.id')
+        .addGroupBy('monitor.usuario')
+        .addGroupBy('datosMonitor.name')
         .orderBy('actividad.fecha', 'DESC')
         .getRawMany();
 
+      // Formatear los resultados para incluir el creador en un objeto anidado
+      const promediosFormateados = promedios.map(promedio => ({
+        actividadId: promedio.actividadId,
+        descripcionActividad: promedio.descripcionActividad,
+        fechaActividad: promedio.fechaActividad,
+        promedio: promedio.promedio,
+        totalCalificaciones: promedio.totalCalificaciones,
+        parque: {
+          id: promedio.parqueId,
+          nombre: promedio.nombreParque
+        },
+        tipoActividad: {
+          id: promedio.tipoActividadId,
+          nombre: promedio.nombreTipoActividad
+        },
+        creador: {
+          id: promedio.monitorId,
+          usuario: promedio.monitorUsuario,
+          nombre: promedio.monitorNombre || 'Sin nombre'
+        }
+      }));
+
       return {
         message: 'Promedios calculados correctamente',
-        data: promedios
+        data: promediosFormateados
       };
     } catch (error) {
       console.log('Error al calcular promedios:', error);
@@ -405,12 +445,18 @@ export class CalificacionService {
         .addSelect('actividad.id', 'actividadId')
         .addSelect('actividad.descripcion', 'descripcionActividad')
         .addSelect('actividad.fecha', 'fechaActividad')
+        .addSelect('parque.id', 'parqueId')
+        .addSelect('parque.nombre', 'nombreParque')
+        .addSelect('tipoActividad.id', 'tipoActividadId')
+        .addSelect('tipoActividad.nombre', 'nombreTipoActividad')
         .addSelect('usuario.id', 'usuarioId')
         .addSelect('usuario.email', 'email')
         .addSelect('usuario.usuario', 'nombreUsuario')
         .addSelect('datos.name', 'nombre')
         .innerJoin('calificacion.actividad', 'actividad')
         .innerJoin('actividad.user', 'monitor')
+        .leftJoin('actividad.parque', 'parque')
+        .leftJoin('actividad.tipoActividad', 'tipoActividad')
         .innerJoin('calificacion.usuario', 'usuario')
         .leftJoin('usuario.datosGenerales', 'datos')
         .where('monitor.id = :userId', { userId })
@@ -447,6 +493,14 @@ export class CalificacionService {
             id: cal.actividadId,
             descripcion: cal.descripcionActividad,
             fecha: cal.fechaActividad,
+            parque: {
+              id: cal.parqueId,
+              nombre: cal.nombreParque
+            },
+            tipoActividad: {
+              id: cal.tipoActividadId,
+              nombre: cal.nombreTipoActividad
+            },
             calificaciones: [],
             promedio: 0
           });
@@ -462,6 +516,8 @@ export class CalificacionService {
           id: act.id,
           descripcion: act.descripcion,
           fecha: act.fecha,
+          parque: act.parque,
+          tipoActividad: act.tipoActividad,
           totalCalificaciones: act.calificaciones.length,
           promedio: promedioAct
         };
@@ -476,7 +532,15 @@ export class CalificacionService {
         actividad: {
           id: cal.actividadId,
           descripcion: cal.descripcionActividad,
-          fecha: cal.fechaActividad
+          fecha: cal.fechaActividad,
+          parque: {
+            id: cal.parqueId,
+            nombre: cal.nombreParque
+          },
+          tipoActividad: {
+            id: cal.tipoActividadId,
+            nombre: cal.nombreTipoActividad
+          }
         },
         usuario: {
           id: cal.usuarioId,
