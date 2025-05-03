@@ -40,7 +40,7 @@ export class CalificacionController {
   }
 
   @Get('actividad/:actividadId')
-  @Auth()
+  @Auth(ValidRoles.superUser)
   getCalificacionesPorActividad(@Param('actividadId') actividadId: string) {
     return this.calificacionService.getCalificacionesPorActividad(actividadId);
   }
