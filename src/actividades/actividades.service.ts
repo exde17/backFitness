@@ -65,24 +65,48 @@ export class ActividadesService {
   // }
   async findSemana() {
     try {
-      // Obtener el inicio y fin de la semana actual en Colombia (UTC-5)
-      const startOfWeek = moment().tz('America/Bogota').startOf('week').format('YYYY-MM-DD');
-      const endOfWeek = moment().tz('America/Bogota').endOf('week').format('YYYY-MM-DD');
+      // Configurar moment para que considere que la semana comienza el domingo (0) y termina el sábado (6)
+      moment.updateLocale('es', {
+        week: {
+          dow: 0, // Domingo es 0, lunes es 1, etc.
+          doy: 6  // Primer día del año que contiene el primer jueves del año
+        }
+      });
+
+      // Obtener la fecha actual en Colombia (UTC-5) al inicio del día
+      const fechaActual = moment().tz('America/Bogota').startOf('day');
       
-      console.log(`Buscando actividades desde: ${startOfWeek} hasta: ${endOfWeek}`);
+      // Obtener el inicio de la semana actual en Colombia (UTC-5)
+      const startOfWeek = moment().tz('America/Bogota').startOf('week');
+      
+      // Obtener el fin de la semana actual en Colombia (UTC-5)
+      const endOfWeek = moment().tz('America/Bogota').endOf('week');
+      
+      console.log(`Buscando actividades desde: ${startOfWeek.format('YYYY-MM-DD')} hasta: ${endOfWeek.format('YYYY-MM-DD')}`);
+      console.log(`Fecha actual: ${fechaActual.format('YYYY-MM-DD')}`);
       
       const actividades = await this.actividadeRepository.find({
         relations: ['user.datosGenerales', 'parque', 'tipoActividad'],
         where: {
-          fecha: Between(new Date(startOfWeek), new Date(endOfWeek)),
+          fecha: Between(
+            startOfWeek.toDate(),
+            endOfWeek.toDate()
+          ),
           // estado: true,
         },
         order: {
           fecha: 'ASC', // Ordenar por fecha ascendente
+          hora: 'ASC',  // Ordenar por hora ascendente
         }
       });
       
-      return actividades;
+      // Filtrar para mostrar solo actividades del día actual en adelante
+      const actividadesFiltradas = actividades.filter(actividad => {
+        const fechaActividad = moment(actividad.fecha).startOf('day');
+        return fechaActividad.isSameOrAfter(fechaActual);
+      });
+      
+      return actividadesFiltradas;
     } catch (error) {
       console.log(error);
       throw new HttpException('Error al obtener las actividades de la semana', HttpStatus.INTERNAL_SERVER_ERROR);
