@@ -45,6 +45,14 @@ export class CalificacionController {
     return this.calificacionService.getCalificacionesPorActividad(actividadId);
   }
 
+  @Get('monitor/ultimo-mes')
+  @Auth(ValidRoles.monitor)
+  getCalificacionesUltimoMesMonitor(
+    @GetUser() user: User
+  ) {
+    return this.calificacionService.getCalificacionesUltimoMesMonitor(user.id);
+  }
+
   @Get(':id')
   @Auth()
   findOne(@Param('id') id: string) {

@@ -383,4 +383,125 @@ export class CalificacionService {
       };
     }
   }
+
+  /**
+   * Obtiene las calificaciones del último mes de las actividades del monitor logueado
+   * @param userId ID del usuario monitor
+   * @returns Calificaciones del último mes con su promedio
+   */
+  async getCalificacionesUltimoMesMonitor(userId: string) {
+    try {
+      // Calculamos la fecha de hace un mes
+      const fechaUnMesAtras = new Date();
+      fechaUnMesAtras.setMonth(fechaUnMesAtras.getMonth() - 1);
+
+      // Obtenemos las actividades del monitor
+      const calificaciones = await this.calificacionRepository
+        .createQueryBuilder('calificacion')
+        .select('calificacion.id', 'id')
+        .addSelect('calificacion.calificacion', 'calificacion')
+        .addSelect('calificacion.comentario', 'comentario')
+        .addSelect('calificacion.fechaCreacion', 'fecha')
+        .addSelect('actividad.id', 'actividadId')
+        .addSelect('actividad.descripcion', 'descripcionActividad')
+        .addSelect('actividad.fecha', 'fechaActividad')
+        .addSelect('usuario.id', 'usuarioId')
+        .addSelect('usuario.email', 'email')
+        .addSelect('usuario.usuario', 'nombreUsuario')
+        .addSelect('datos.name', 'nombre')
+        .innerJoin('calificacion.actividad', 'actividad')
+        .innerJoin('actividad.user', 'monitor')
+        .innerJoin('calificacion.usuario', 'usuario')
+        .leftJoin('usuario.datosGenerales', 'datos')
+        .where('monitor.id = :userId', { userId })
+        .andWhere('calificacion.fechaCreacion >= :fechaUnMesAtras', { fechaUnMesAtras })
+        .andWhere('calificacion.estado = :estado', { estado: true })
+        .orderBy('calificacion.fechaCreacion', 'DESC')
+        .getRawMany();
+
+      if (calificaciones.length === 0) {
+        return {
+          message: 'No se encontraron calificaciones en el último mes',
+          data: {
+            calificaciones: [],
+            promedio: 0,
+            totalCalificaciones: 0,
+            actividadesCalificadas: 0
+          }
+        };
+      }
+
+      // Calculamos el promedio general de todas las calificaciones
+      const totalCalificaciones = calificaciones.length;
+      const sumaCalificaciones = calificaciones.reduce(
+        (sum, cal) => sum + parseFloat(cal.calificacion), 
+        0
+      );
+      const promedio = parseFloat((sumaCalificaciones / totalCalificaciones).toFixed(2));
+
+      // Agrupamos las calificaciones por actividad para estadísticas
+      const actividadesMap = new Map();
+      calificaciones.forEach(cal => {
+        if (!actividadesMap.has(cal.actividadId)) {
+          actividadesMap.set(cal.actividadId, {
+            id: cal.actividadId,
+            descripcion: cal.descripcionActividad,
+            fecha: cal.fechaActividad,
+            calificaciones: [],
+            promedio: 0
+          });
+        }
+        actividadesMap.get(cal.actividadId).calificaciones.push(parseFloat(cal.calificacion));
+      });
+
+      // Calculamos el promedio por actividad
+      const actividadesResumen = Array.from(actividadesMap.values()).map(act => {
+        const sumaAct = act.calificaciones.reduce((sum, cal) => sum + cal, 0);
+        const promedioAct = parseFloat((sumaAct / act.calificaciones.length).toFixed(2));
+        return {
+          id: act.id,
+          descripcion: act.descripcion,
+          fecha: act.fecha,
+          totalCalificaciones: act.calificaciones.length,
+          promedio: promedioAct
+        };
+      });
+
+      // Formateamos los datos para una mejor presentación
+      const calificacionesFormateadas = calificaciones.map(cal => ({
+        id: cal.id,
+        calificacion: cal.calificacion,
+        comentario: cal.comentario,
+        fecha: cal.fecha,
+        actividad: {
+          id: cal.actividadId,
+          descripcion: cal.descripcionActividad,
+          fecha: cal.fechaActividad
+        },
+        usuario: {
+          id: cal.usuarioId,
+          email: cal.email,
+          usuario: cal.nombreUsuario,
+          nombre: cal.nombre || 'Usuario sin nombre'
+        }
+      }));
+
+      return {
+        message: 'Calificaciones del último mes obtenidas correctamente',
+        data: {
+          // calificaciones: calificacionesFormateadas,
+          promedio,
+          totalCalificaciones,
+          actividadesCalificadas: actividadesMap.size,
+          resumenActividades: actividadesResumen
+        }
+      };
+    } catch (error) {
+      console.log('Error al obtener calificaciones del último mes:', error);
+      return {
+        message: 'Error al obtener las calificaciones del último mes',
+        error: error.message
+      };
+    }
+  }
 }
