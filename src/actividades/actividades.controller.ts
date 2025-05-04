@@ -4,6 +4,7 @@ import { CreateActividadeDto } from './dto/create-actividade.dto';
 import { UpdateActividadeDto } from './dto/update-actividade.dto';
 import { Auth, GetUser } from 'src/user/decorator';
 import { User } from 'src/user/entities/user.entity';
+import { ValidRoles } from 'src/user/interfaces';
 
 @Controller('actividades')
 export class ActividadesController {
@@ -103,5 +104,11 @@ export class ActividadesController {
   @Auth()
   remove(@Param('id') id: string) {
     return this.actividadesService.remove(+id);
+  }
+
+  @Patch('checkAsistenca/:id')
+  @Auth(ValidRoles.superUser)
+  checkAsistencia(@Param('id') id: string) {
+    return this.actividadesService.checkAsistencia(id);
   }
 }

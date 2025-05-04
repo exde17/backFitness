@@ -283,4 +283,20 @@ export class ActividadesService {
   remove(id: number) {
     return `This action removes a #${id} actividade`;
   }
+
+  async checkAsistencia(id: string) {
+    try {
+      const actividad = await this.actividadeRepository.findOne({
+        where: {
+          id
+        }
+      });
+      actividad.checkAsistencia = !actividad.checkAsistencia;
+      await this.actividadeRepository.save(actividad);
+      return 'aistencia abilitada';
+    } catch (error) {
+      console.log(error);
+      return 'Error al actualizar la asistencia';
+    }
+  }
 }

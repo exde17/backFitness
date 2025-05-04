@@ -69,4 +69,11 @@ export class Actividade {
         default: ""
     })
     descripcion: string;
+
+    // check para dejar que super user lo cambie a verdadero y asi el monitor pueda pasar lista si ya se paso la hora o fecha
+    @Column('bool',{
+        nullable: false,
+        default: false,
+    })
+    checkAsistencia: boolean;
 }
