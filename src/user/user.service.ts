@@ -406,4 +406,38 @@ export class UserService {
     }
   }
 
+  async searchUsersByGeneralData(filters: { name?: string, documentNumber?: string }) {
+    try {
+      const queryBuilder = this.userRepository.createQueryBuilder('user')
+        .leftJoinAndSelect('user.datosGenerales', 'datosGenerales');
+      
+      if (filters.name) {
+        queryBuilder.andWhere('LOWER(datosGenerales.name) LIKE LOWER(:name)', { 
+          name: `%${filters.name}%` 
+        });
+        console.log('name: ', filters.name);  
+      }
+      
+      if (filters.documentNumber) {
+        queryBuilder.andWhere('datosGenerales.documentNumber LIKE :documentNumber', { 
+          documentNumber: `%${filters.documentNumber}%` 
+        });
+        console.log('documentNumber: ', filters.documentNumber);
+      }
+
+      
+      
+      const users = await queryBuilder.getMany();
+      
+      return {
+        ok: true,
+        users,
+        count: users.length
+      };
+    } catch (error) {
+      console.log(error);
+      throw new HttpException(error.message || 'Unexpected error occurred', 500);
+    }
+  }
+
 }

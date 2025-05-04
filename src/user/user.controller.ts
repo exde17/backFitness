@@ -50,6 +50,20 @@ export class UserController {
   ) {
     return this.userService.changePassword(id, newPassword);
   }
+
+  @Get('search')
+  @Auth()
+  searchUsers(
+    @Query('name') name?: string,
+    @Query('documentNumber') documentNumber?: string
+  ) {
+    const filters: any = {};
+    
+    if (name) filters.name = name;
+    if (documentNumber) filters.documentNumber = documentNumber;
+    
+    return this.userService.searchUsersByGeneralData(filters);
+  }
   
 
   @Get()
@@ -140,4 +154,6 @@ export class UserController {
   createMonitor(@Body() createMonitorDto: CreateMonitorDto){
     return this.userService.createMonitor(createMonitorDto);
   }
+
+  
 }
