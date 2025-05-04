@@ -8,6 +8,7 @@ import { User } from 'src/user/entities/user.entity';
 import { DatosGenerale } from 'src/datos-generales/entities/datos-generale.entity';
 import { Actividade } from 'src/actividades/entities/actividade.entity';
 import { Parque } from 'src/parque/entities/parque.entity';
+import { DateTime } from 'luxon';
 import { 
   GenderStatistics, 
   BarrioGenderStatistics, 
@@ -87,46 +88,53 @@ export class AsistenciaService {
       if (existeAsistencia) {
         return 'Ya existe una asistencia para esta actividad';
       }
-
+  
       // Obtener la actividad asociada
       const actividadId = typeof createAsistenciaDto.actividad === 'string'
         ? createAsistenciaDto.actividad
         : createAsistenciaDto.actividad.id;
-
+  
       const actividad = await this.actividadeRepository.findOne({
         where: { id: actividadId },
       });
-
+  
       if (!actividad) {
         return 'No se encontró la actividad especificada';
       }
-
-      // Combinar fecha y hora de la actividad en un solo objeto Date
-      const actividadFecha = new Date(actividad.fecha);
-      const [hora, minutos, segundos] = actividad.hora.toString().split(':');
-      actividadFecha.setHours(Number(hora), Number(minutos), Number(segundos) || 0, 0);
-
+  
+      // Combinar fecha y hora de la actividad en un solo objeto DateTime en zona Bogotá
+      // actividad.fecha es tipo Date (solo fecha), actividad.hora es tipo Date (solo hora)
+      const fechaStr = DateTime.fromJSDate(actividad.fecha).toFormat('yyyy-MM-dd');
+      const horaStr = DateTime.fromJSDate(actividad.hora).toFormat('HH:mm:ss');
+      const actividadDateTime = DateTime.fromFormat(
+        `${fechaStr} ${horaStr}`,
+        'yyyy-MM-dd HH:mm:ss',
+        { zone: 'America/Bogota' }
+      );
+  
       // Calcular el rango permitido
-      const inicioPermitido = new Date(actividadFecha.getTime() - 30 * 60 * 1000); // 30 minutos antes
-      const finPermitido = new Date(actividadFecha.getTime() + 60 * 60 * 1000);   // 1 hora después
-
-      const ahora = new Date();
-
+      const inicioPermitido = actividadDateTime.minus({ minutes: 30 });
+      const finPermitido = actividadDateTime.plus({ hours: 1 });
+  
+      // Obtener la hora actual en zona Bogotá
+      const ahora = DateTime.now().setZone('America/Bogota');
+      console.log('Hora actual Bogotá:', ahora.toISO());
+  
       // Validar rango de tiempo o checkAsistencia
       if (
         !actividad.checkAsistencia &&
         (ahora < inicioPermitido || ahora > finPermitido)
       ) {
-        return `Solo se puede registrar asistencia entre ${inicioPermitido.toLocaleTimeString()} y ${finPermitido.toLocaleTimeString()} para esta actividad`;
+        return `Solo se puede registrar asistencia entre ${inicioPermitido.toFormat('HH:mm')} y ${finPermitido.toFormat('HH:mm')} para esta actividad (hora Bogotá)`;
       }
-
+  
       // Si está permitido, crear la nueva asistencia
       const asistencia = this.asistenciaRepository.create({
         ...createAsistenciaDto,
         actividad: actividad, // Asegura la relación correcta
-        fecha: ahora,
+        fecha: ahora.toJSDate(), // Guarda la fecha/hora en zona Bogotá
       });
-
+  
       await this.asistenciaRepository.save(asistencia);
       return 'asistencia creada con exito';
     } catch (error) {
