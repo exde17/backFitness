@@ -57,19 +57,74 @@ export class AsistenciaService {
     }
   }
 
+  // async create(createAsistenciaDto: CreateAsistenciaDto) {
+  //   try {
+  //     // Verificar si ya existe una asistencia para este documento y esta actividad
+  //     const existeAsistencia = await this.verificarAsistenciaExistente(createAsistenciaDto);
+      
+  //     if(existeAsistencia){
+  //       return 'Ya existe una asistencia para esta actividad';
+  //     }
+
+  //     // Si no existe, crear la nueva asistencia
+  //     const asistencia = this.asistenciaRepository.create({
+  //       ...createAsistenciaDto,
+  //       fecha: new Date(),
+  //     });
+
+  //     await this.asistenciaRepository.save(asistencia);
+  //     return 'asistencia creada con exito';
+  //   } catch (error) {
+  //     console.log(error);
+  //     return 'Error al crear la asistencia';
+  //   }
+  // }
+
   async create(createAsistenciaDto: CreateAsistenciaDto) {
     try {
       // Verificar si ya existe una asistencia para este documento y esta actividad
       const existeAsistencia = await this.verificarAsistenciaExistente(createAsistenciaDto);
-      
-      if(existeAsistencia){
+      if (existeAsistencia) {
         return 'Ya existe una asistencia para esta actividad';
       }
 
-      // Si no existe, crear la nueva asistencia
+      // Obtener la actividad asociada
+      const actividadId = typeof createAsistenciaDto.actividad === 'string'
+        ? createAsistenciaDto.actividad
+        : createAsistenciaDto.actividad.id;
+
+      const actividad = await this.actividadeRepository.findOne({
+        where: { id: actividadId },
+      });
+
+      if (!actividad) {
+        return 'No se encontró la actividad especificada';
+      }
+
+      // Combinar fecha y hora de la actividad en un solo objeto Date
+      const actividadFecha = new Date(actividad.fecha);
+      const [hora, minutos, segundos] = actividad.hora.toString().split(':');
+      actividadFecha.setHours(Number(hora), Number(minutos), Number(segundos) || 0, 0);
+
+      // Calcular el rango permitido
+      const inicioPermitido = new Date(actividadFecha.getTime() - 30 * 60 * 1000); // 30 minutos antes
+      const finPermitido = new Date(actividadFecha.getTime() + 60 * 60 * 1000);   // 1 hora después
+
+      const ahora = new Date();
+
+      // Validar rango de tiempo o checkAsistencia
+      if (
+        !actividad.checkAsistencia &&
+        (ahora < inicioPermitido || ahora > finPermitido)
+      ) {
+        return `Solo se puede registrar asistencia entre ${inicioPermitido.toLocaleTimeString()} y ${finPermitido.toLocaleTimeString()} para esta actividad`;
+      }
+
+      // Si está permitido, crear la nueva asistencia
       const asistencia = this.asistenciaRepository.create({
         ...createAsistenciaDto,
-        fecha: new Date(),
+        actividad: actividad, // Asegura la relación correcta
+        fecha: ahora,
       });
 
       await this.asistenciaRepository.save(asistencia);
@@ -80,70 +135,6 @@ export class AsistenciaService {
     }
   }
 
-  // async findAllNoCalificadas(user: User) {
-  //   try {
-  //     // busco el documento del usuario
-  //     const userDatos = await this.datosGeneraleRepository.findOne({
-  //       where: {
-  //         user: { id: user.id },
-  //       },
-  //       relations: ['user'],
-  //     });
-  //     if (!userDatos) {
-  //       return 'No se encontro el documento del usuario';
-  //     }
-      
-  //     const asistencias = await this.asistenciaRepository.find({
-  //       relations: ['actividad'],
-  //       where: {
-  //         documento: userDatos.documentNumber,
-  //         calificado: false,
-  //       },
-  //     });
-  
-  //     // buscar nombre tipo actividad y parque
-  //     const actividades = await this.actividadeRepository.find({
-  //       relations: ['tipoActividad', 'parque'], // Incluye la relación con parque
-  //       where: {
-  //         id: In(asistencias.map((asistencia) => asistencia.actividad.id)),
-  //       },
-  //     });
-  
-  //     return {
-  //       asistencias: asistencias.map((asistencia) => {
-  //         const actividad = actividades.find(
-  //           (actividad) => actividad.id === asistencia.actividad.id,
-  //         );
-  //         return {
-  //           ...asistencia,
-  //           actividad: {
-  //             ...actividad,
-  //             tipoActividad: {
-  //               nombre: actividad.tipoActividad.nombre,
-  //             },
-  //             parque: {
-  //               nombre: actividad.parque.nombre, // Incluye el nombre del parque
-  //             },
-  //           },
-  //         };
-  //       }),
-  //       actividades: actividades.map((actividad) => {
-  //         return {
-  //           ...actividad,
-  //           tipoActividad: {
-  //             nombre: actividad.tipoActividad.nombre,
-  //           },
-  //           parque: {
-  //             nombre: actividad.parque.nombre, // Incluye el nombre del parque
-  //           },
-  //         };
-  //       }),
-  //     };
-  //   } catch (error) {
-  //     console.log(error);
-  //     return 'Error al obtener las asistencias';
-  //   }
-  // }
 
   async findAllNoCalificadas(user: User) {
     try {
