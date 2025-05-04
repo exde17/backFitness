@@ -138,6 +138,31 @@ export class ActividadesService {
     }
   }
 
+  // trae actividades para la asistencia exclusiva del  monitor y del dia en curso
+  async findDiaAsistencia(user: User)
+  {
+    try {
+      // Obtener la fecha de hoy en Colombia (UTC-5)
+      const todayInColombia = moment().tz('America/Bogota').format('YYYY-MM-DD');
+      // console.log(`Buscando actividades para el monitor con ID: ${user.id} y fecha: ${todayInColombia}`);
+      const actividades = await this.actividadeRepository.find({
+        relations: ['user.datosGenerales', 'parque', 'tipoActividad'],
+        where: {
+          fecha: Raw((alias) => `CAST(${alias} AS TEXT) = :today`, { today: todayInColombia }),
+          user: {
+            id: user.id
+          },
+          // estado: true
+        },
+      });
+      return actividades;
+    } catch (error) {
+      console.log(error);
+      return 'Error al obtener las actividades';
+    }
+  }
+
+
   // actividades por rango de fechas
   async findByDateRange(fechaInicio: string, fechaFin: string) {
     try {

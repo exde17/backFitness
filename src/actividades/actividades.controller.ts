@@ -35,9 +35,18 @@ export class ActividadesController {
     return this.actividadesService.findSemana();
   }
 
+  // trae actividades para la asistencia exclusiva del  monitor y del dia en curso
+  @Get('asistencia-dia')
+  @Auth(ValidRoles.monitor)
+  async findDiaAsistencia(
+    @GetUser() user: User
+  ) {
+    return this.actividadesService.findDiaAsistencia(user);
+  }
+
   // actividades por monitor 
   @Get('monitor')
-  @Auth()
+  @Auth(ValidRoles.monitor)
   async findMonitor(
     @GetUser() user: User,
   ) {
