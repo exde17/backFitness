@@ -16,6 +16,7 @@ export class AsistenciaController {
   ) {}
 
   @Post()
+  @Auth(ValidRoles.monitor, ValidRoles.superUser)
   async create(@Body() createAsistenciaDto: CreateAsistenciaDto) {
     return this.asistenciaService.create(createAsistenciaDto);
   }
@@ -35,6 +36,7 @@ export class AsistenciaController {
   }
 
   @Get(':id')
+  @Auth()
   findOne(@Param('id') id: string) {
     return this.asistenciaService.findOne(id);
   }
@@ -59,7 +61,7 @@ export class AsistenciaController {
   }
 
   @Get('estadisticas/genero')
-  @Auth()
+  @Auth(ValidRoles.superUser)
   @ApiOperation({ summary: 'Obtener promedio de asistencias por género' })
   @ApiResponse({ 
     status: 200, 
