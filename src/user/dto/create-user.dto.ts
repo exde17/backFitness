@@ -124,7 +124,7 @@ export class CreateUserDto {
     readonly telefonoContacto: string;
 
     @IsEnum(ZonaType)
-    @IsNotEmpty()
+    @IsOptional()
     readonly zona: ZonaType;
 
     

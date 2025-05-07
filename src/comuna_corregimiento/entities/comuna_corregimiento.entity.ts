@@ -1,5 +1,8 @@
+import { IsEnum, IsNotEmpty, IsOptional } from 'class-validator';
 import { Barrio } from 'src/barrio/entities/barrio.entity';
+import { ZonaType } from 'src/user/utils/zonaType.enum';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+
 
 @Entity('comuna_corregimiento')
 export class ComunaCorregimiento {
@@ -7,18 +10,24 @@ export class ComunaCorregimiento {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
-    @Column('text',{
+    @Column('text', {
         unique: true,
         nullable: false
     })
     nombre: string;
 
-    @Column('bool',{
+    @Column('bool', {
         default: true
     })
     estado: boolean;
 
     @OneToMany(() => Barrio, barrio => barrio.comunaCorregimiento)
     barrios: 'Barrio[]';
+
+    @Column('enum',{
+        enum: ZonaType,
+        nullable: true,
+    })
+    zona: ZonaType;
 
 }

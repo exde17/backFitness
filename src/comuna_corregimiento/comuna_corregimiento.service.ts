@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { CreateComunaCorregimientoDto } from './dto/create-comuna_corregimiento.dto';
 import { UpdateComunaCorregimientoDto } from './dto/update-comuna_corregimiento.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -25,18 +25,43 @@ export class ComunaCorregimientoService {
     }
   }
 
-  async findAll() {
+  // async findAll() {
+  //   try {
+  //     return await this.comunaCorregimientoRepository.find({
+  //       where:{
+  //         estado: true
+  //       }
+  //     });
+      
+  //   } catch (error) {
+  //     console.log(error);
+  //     return 'Error al listar comunaCorregimiento';
+      
+  //   }
+  // }
+
+  async findAll(nombre?: string) {
     try {
-      return await this.comunaCorregimientoRepository.find({
-        where:{
-          estado: true
-        }
-      });
+      const queryBuilder = this.comunaCorregimientoRepository.createQueryBuilder('comunaCorregimiento')
+        .leftJoinAndSelect('comunaCorregimiento.barrios', 'barrios');
       
+      // Si se proporciona un nombre, filtramos por coincidencia insensible a mayúsculas/minúsculas
+      if (nombre) {
+        queryBuilder.where('LOWER(comunaCorregimiento.nombre) LIKE LOWER(:nombre)', { 
+          nombre: `%${nombre.trim()}%` 
+        });
+      }
+      
+      const comunasCorregimientos = await queryBuilder.getMany();
+      
+      return {
+        ok: true,
+        comunasCorregimientos,
+        count: comunasCorregimientos.length
+      };
     } catch (error) {
-      console.log(error);
-      return 'Error al listar comunaCorregimiento';
-      
+      console.error('Error al obtener comunas/corregimientos:', error);
+      throw new HttpException(error.message || 'Error al obtener comunas/corregimientos', 500);
     }
   }
 
