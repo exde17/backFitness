@@ -3,12 +3,14 @@ import { TipoActividadService } from './tipo-actividad.service';
 import { CreateTipoActividadDto } from './dto/create-tipo-actividad.dto';
 import { UpdateTipoActividadDto } from './dto/update-tipo-actividad.dto';
 import { Auth } from 'src/user/decorator';
+import { ValidRoles } from 'src/user/interfaces';
 
 @Controller('tipo-actividad')
 export class TipoActividadController {
   constructor(private readonly tipoActividadService: TipoActividadService) {}
 
   @Post()
+  @Auth(ValidRoles.superUser)
   async create(@Body() createTipoActividadDto: CreateTipoActividadDto) {
     return this.tipoActividadService.create(createTipoActividadDto);
   }

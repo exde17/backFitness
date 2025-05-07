@@ -18,7 +18,7 @@ async function bootstrap() {
   );
 
   app.enableCors({
-    origin: ['https://fitness.joperico.xyz', 'http://localhost:53736', 'https://web-fitness-green.vercel.app'], // ⚠️ En producción, cambia "*" por el dominio de tu frontend
+    origin: ['https://fitness.joperico.xyz', 'http://localhost:53736', 'https://webb-fitness.vercel.app'], // ⚠️ En producción, cambia "*" por el dominio de tu frontend
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
   });

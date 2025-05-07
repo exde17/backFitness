@@ -4,6 +4,7 @@ import { CreateCaracterizacionDto } from './dto/create-caracterizacion.dto';
 import { UpdateCaracterizacionDto } from './dto/update-caracterizacion.dto';
 import { Auth, GetUser } from 'src/user/decorator';
 import { User } from 'src/user/entities/user.entity';
+import { ValidRoles } from 'src/user/interfaces';
 
 @Controller('caracterizacion')
 export class CaracterizacionController {
@@ -37,7 +38,7 @@ export class CaracterizacionController {
 
   // cambiar estado de la caracterizacion
   @Patch('estado/:id')
-  @Auth()
+  @Auth(ValidRoles.superUser, ValidRoles.monitor)
   async updateEstado(@Param('id') id: string) {
     return this.caracterizacionService.updateEstado(id);
   }

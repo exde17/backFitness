@@ -31,6 +31,7 @@ export class AsistenciaController {
   }
 
   @Get()
+  @Auth()
   findAll() {
     return this.asistenciaService.findAll();
   }
