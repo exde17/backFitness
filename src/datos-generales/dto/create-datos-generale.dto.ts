@@ -2,6 +2,7 @@ import { IsDateString, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString } from
 import { GenderType } from "src/user/utils/genderType.enum";
 import { DocumentType } from "../../user/utils/documentType.enum";
 import { ZonaType } from "src/user/utils/zonaType.enum";
+import { Barrio } from "src/barrio/entities/barrio.entity";
 
 export class CreateDatosGeneraleDto {
     @IsString()
@@ -51,6 +52,10 @@ export class CreateDatosGeneraleDto {
   @IsEnum(ZonaType)
   @IsOptional()
   readonly zona: ZonaType;
+
+  @IsString()
+  @IsOptional()
+  readonly barrioId?: Barrio;
   
 
   @IsString()

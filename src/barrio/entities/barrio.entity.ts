@@ -1,4 +1,5 @@
 import { ComunaCorregimiento } from "src/comuna_corregimiento/entities/comuna_corregimiento.entity";
+import { DatosGenerale } from "src/datos-generales/entities/datos-generale.entity";
 import { Parque } from "src/parque/entities/parque.entity";
 import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
@@ -23,4 +24,7 @@ export class Barrio {
 
     @ManyToOne(()=> ComunaCorregimiento, comunaCorregimiento => comunaCorregimiento.barrios)
     comunaCorregimiento: ComunaCorregimiento;
+
+    @OneToMany(()=> DatosGenerale, d => d.barrioId)
+    datosGenerales: DatosGenerale[];
 }

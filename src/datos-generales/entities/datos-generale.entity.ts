@@ -3,6 +3,7 @@ import { DocumentType } from "../../user/utils/documentType.enum";
 import { GenderType } from "src/user/utils/genderType.enum";
 import { User } from "src/user/entities/user.entity";
 import { ZonaType } from "src/user/utils/zonaType.enum";
+import { Barrio } from "src/barrio/entities/barrio.entity";
 
 @Entity('datos_generales')
 export class DatosGenerale {
@@ -53,6 +54,9 @@ export class DatosGenerale {
             name: 'barrio',
         })
         barrio: string;
+
+        @ManyToOne(()=> Barrio, b => b.datosGenerales, {nullable: true})
+        barrioId: Barrio;
     
         @Column('text', {
             nullable: true,
