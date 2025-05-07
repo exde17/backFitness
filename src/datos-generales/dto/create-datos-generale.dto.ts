@@ -49,7 +49,7 @@ export class CreateDatosGeneraleDto {
   readonly gender: GenderType;
 
   @IsEnum(ZonaType)
-  @IsNotEmpty()
+  @IsOptional()
   readonly zona: ZonaType;
   
 
