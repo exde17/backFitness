@@ -65,6 +65,9 @@ export class DatosGeneralesService {
   async findOne(user: User) {
     try {
       return await this.datosGeneraleRepository.findOne({
+        relations:{
+          barrioId: true,
+        },
         where: {
           user: {
             id: user.id,}
