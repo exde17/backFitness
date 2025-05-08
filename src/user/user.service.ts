@@ -63,6 +63,7 @@ export class UserService {
         birthDate: createUserDto.birthDate,
         address: createUserDto.address,
         barrio: createUserDto.barrio,
+        barrioId: createUserDto.barrioId,
         comunaCorregimiento: createUserDto.comunaCorregimiento,
         etnia: createUserDto.etnia,
         discapacidad: createUserDto.discapacidad,
