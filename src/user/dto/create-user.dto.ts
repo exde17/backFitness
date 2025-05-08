@@ -16,6 +16,7 @@ import { Transform } from 'class-transformer';
 import { GenderType } from '../utils/genderType.enum';
 import { DocumentType } from "../../user/utils/documentType.enum";
 import { ZonaType } from '../utils/zonaType.enum';
+import { Barrio } from 'src/barrio/entities/barrio.entity';
 
 export class CreateUserDto {
   // @IsString()
@@ -126,6 +127,10 @@ export class CreateUserDto {
     @IsEnum(ZonaType)
     @IsOptional()
     readonly zona: ZonaType;
+
+    @IsString()
+    @IsNotEmpty()
+    readonly barrioId?: Barrio;
 
     
 }
